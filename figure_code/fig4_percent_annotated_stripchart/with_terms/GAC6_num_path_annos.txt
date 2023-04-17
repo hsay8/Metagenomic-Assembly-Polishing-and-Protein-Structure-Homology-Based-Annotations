@@ -1,0 +1,17 @@
+contig_11636 	59	0	4	8
+contig_14755 	57	0	2	1
+contig_20230 	73	0	4	3
+contig_20281 	60	0	4	1
+contig_20854 	138	0	12	11
+contig_21286 	80	0	8	5
+contig_21978 	71	0	7	6
+contig_22135 	59	0	7	1
+contig_22139 	105	0	8	6
+contig_22365 	83	0	11	4
+contig_2601 	89	0	11	7
+contig_3456 	64	0	4	8
+contig_4842 	71	0	5	4
+contig_8770 	77	0	10	5
+contig_bin.788_3 	64	0	3	2
+contig_bin.860_3 	71	0	5	3
+contig_bin.881_1 	70	0	6	5

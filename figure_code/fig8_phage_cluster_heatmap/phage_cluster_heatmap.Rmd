@@ -1,0 +1,166 @@
+---
+title: "phage_cluster_heatmap"
+author: "Henry"
+date: "2023-03-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Initialize Data
+```{r}
+library(dplyr)
+library(readr)
+library(stringr)
+
+samp.list <- read.table("./contigs_samples_list.txt", col.names = c("contig", "sample"))
+TM.files <- list.files("./TMScore_data/", full.names=TRUE) #where you have your files
+FS.anno.files <- list.files("./FSanno_lookup/", full.names=TRUE) #where you have your files
+
+#Read tables into one dataframe
+TM <- do.call(rbind,lapply(TM.files,read.table))
+#Another way of reading the tables into one dataframe using readr, but includes the source file in its own column
+files <- fs::dir_ls("./FSanno_lookup/", glob="*.txt", type="file")
+FS <- read_delim(files, id="contig")
+FS$contig <- gsub('./FSanno_lookup/', '', FS$contig)
+FS$contig <- gsub('_besthits_annot.txt', '', FS$contig)
+
+#Only need the cluster members, cluster reps, and TM score. So subset TM
+TM.sub <- TM[,1:3]
+#Query would be the representative, just naming it this for merging the columns later
+colnames(TM.sub) <- c("member", "Query", "TMScore")
+
+#trim names of proteins given by colabfold
+trim_prot_names <- function(x){
+  x <- gsub('_relaxed.*?.pdb', '', x)
+  x <- gsub('_unrelaxed.*?.pdb', '', x)
+}
+
+#Remove bad matches - < 0.5 TM score
+#TM.sub <- subset(TM.sub, TMScore > 0.5)
+
+TM.sub$member <- trim_prot_names(TM.sub$member)
+TM.sub$Query <- trim_prot_names(TM.sub$Query)
+
+#Add FS names to TM.sub
+#Since we're string matching just make sure to get rid of trailing whitespace
+FS <- FS %>%
+  mutate_all(str_trim)
+TM.sub <- TM.sub %>%
+  mutate_all(str_trim)
+
+#Merge based on representatives (Query) to add the protein name
+to.merge <- FS[,c("Query", "Protein Name", "Target Accession")]
+TM.df <- merge(to.merge, TM.sub, by = "Query")
+
+#Merge based on members to add the contig it came from
+to.merge2 <- FS[,c("contig", "Query")]
+  colnames(to.merge2) <- c("contig", "member")
+TM.df <- merge(TM.df,to.merge2, by = "member")
+
+#Merge based on contig to add its sample origin
+#Change sample names to the name its referred to in the paper
+names <- data.frame(GAC = c( "GAC0",
+                    "GAC1",
+                    "GAC2",
+                    "GAC3",
+                    "GAC4",
+                    "GAC5",
+                    "GAC6",
+                    "GAC7",
+                    "GAC8",
+                    "GAC9"
+                    ),
+          sample = c("carbon granules 4",
+                      "T2_jan27-20",
+                      "T4_feb14-20",
+                      "gac_march_02-20",
+                      "T2_oct6-20",
+                      "T2_may3-21",
+                      "T3_may7-21",
+                      "T4_may14-21",
+                      "T1_aug10-21",
+                      "T3_apr21-22"
+                     )
+          )
+
+samp.list <- merge(samp.list, names, by = "sample")
+TM.df <- merge(samp.list, TM.df, by = "contig")
+
+#formatting column names and type
+colnames(TM.df) <- c( "mem_contig", "sample_d", "sample", "mem", "rep", "rep_name", "accession","TM_score")
+TM.df$TM_score <- as.numeric(TM.df$TM_score)
+
+#Subset for keywords head tail capsid and plate in representative names column
+TM.df.filt <- TM.df[grepl("head|tail|capsid|plate", TM.df$rep_name),] 
+  
+#Combine the generic names with their accessions into a column
+TM.df.filt$rep_name_acc <- paste(TM.df.filt$rep_name, TM.df.filt$accession, sep=": ")
+
+#Also remove protein hits to itself where TM is less than 1 (confusing why this is, but it may be because some proteins have more than 1 built model that I unintentionally included in the clustering)
+TM.df.filt <- subset(TM.df.filt, !(mem %in% rep & TM_score < 1))
+
+#Data of just the representatives (members will equal to representatives, so the member's contig and sample is the representative's contig an sample)
+TM.reps <- TM.df.filt[TM.df.filt$mem %in% TM.df.filt$rep,]
+
+
+```
+
+```{r}
+library(ggplot2)
+library(scales)
+
+p <- ggplot(data = TM.df.filt) +
+  geom_tile(
+    mapping = aes(
+      x = mem_contig,
+      y = rep_name_acc,
+      fill = TM_score,
+    ),
+    size = 0.2,
+    color = "white"
+  ) +
+  #highlight representatives
+  geom_tile(data = TM.reps, 
+            aes(x = mem_contig, y = rep_name_acc, fill = TM_score,),
+            color = "black",
+            size = 1
+  ) +
+  xlab(label = "Contig") +
+  ylab(label = "Cluster Representative") +
+  guides(fill = guide_colourbar(
+                                  title = "TM Scores",
+                                  barwidth = 1,
+                                  barheight = 5
+                                ), 
+          ) +
+  scale_fill_gradientn(colors = c("#ccdaff",  "#7a9fff", "#2262ff"),
+                        values = rescale(c(0,0.5,1)),
+                        guide = "colorbar",
+                       limits = c(0,1))+
+  # change NA legend
+  guides(colour = guide_legend(" ", override.aes = list(colour = "#00D1FF", fill = "#00D1FF"))) +
+  # keep heatmap tiles square
+  #coord_fixed() +
+  # remove background grid, fill with light blue
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.background = element_rect(fill = "#eeeeee", colour = "white", linetype = "solid", size = 0.01),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.placement = "outside"
+  )+
+   facet_grid(~sample, scales = "free", switch ="x", space = "free_x")
+
+library(ggpubr)
+
+ggarrange(p, fs.path.fig,
+          ncol = 1,
+          nrow = 2,
+          labels = c("A","B","C","D"),
+          font.label = list(size=25),
+          heights = c(1,0.5)
+          )
+```

@@ -1,0 +1,307 @@
+---
+title: "Histogram_circle_count"
+author: "Henry"
+date: '2022-09-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The following code generates histograms/density plots that display the size distribution of a dataset
+
+## Gather data from multiple tab files containing the name and sizes of all circles (plasmids + phages) into one dataframe
+```{r}
+getwd()
+
+# get list of files
+files <- list.files(path = "histogram_sample_circles_count", pattern = ".txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files
+df <- lapply(files, function(x) {
+  a <- read.table(x, col.names = c("contig", "bases"), colClasses = c("character", "numeric"))
+})
+
+# rename df's to corresponding file names
+names(df) <- list.files(path = "histogram_sample_circles_count", pattern = ".txt", full.names = TRUE, recursive = FALSE)
+
+# at this point we have a list of dataframes, where each dataframe is represents a sample. When plotting, you select which dataframe to use by index (i.e. df[1] will be sample 1 wheras df[2] will be sample 2)
+list2env(df, envir = .GlobalEnv)
+```
+
+## Generates other tables for individual subsets (plasmid + phage, plasmid only, phage only, recurring, singletons)
+```{r}
+# All circles
+all_circles_sizes <- read.table("histogram_sample_circles_count/recurring_vs_singletons/all_contigs_plasmid_sizes.txt")
+
+# All phages
+phages <- read.table("histogram_sample_circles_count/recurring_vs_singletons/all_phages_sizes.txt")
+
+# All recurring (plasmids only)
+recurring_plasmid <- read.table("histogram_sample_circles_count/recurring_vs_singletons/recurring_plasmid_sizes.txt")
+
+# All recurring (phages)
+recurring_phage <- read.table("histogram_sample_circles_count/recurring_vs_singletons/recurring_phages_sizes.txt")
+
+# Combined recurring (plasmid + phage)
+all_recurring <- rbind(recurring_plasmid, recurring_phage)
+
+# Singletons (includes plasmid and phages)
+singles <- all_circles_sizes[!(all_circles_sizes$V1 %in% all_recurring$V1), ]
+
+# Single phages
+single_phage <- phages[!(phages$V1 %in% recurring_phage$V1), ]
+
+# Single plasmids
+single_plasmid <- singles[!(singles$V1 %in% single_phage), ]
+```
+
+## Create ggplot2 histogram
+
+4 panel for singleton and recurring plasmids and phages
+```{r}
+library(ggplot2)
+library(gridExtra)
+library(ggpubr)
+
+# multiply y axis values
+mult_format <- function() {
+  function(x) format(100000 * x, digits = 1)
+}
+
+# display x axis without scientific notation
+options(scipen = 999)
+
+hist.p1 <- ggplot() +
+  geom_density(
+    data = single_plasmid, aes(x = V2),
+    alpha = 0.5,
+    # blue
+    fill = "#39B185",
+    color = "#39B185",
+    size = 1
+  ) +
+  # ggtitle("Singleton Plasmids") +
+  scale_x_continuous(
+    limits = c(0, 100000),
+    breaks = c(seq(0, 100000, by = 10000)),
+    labels = c(seq(0, 90, by = 10), "100"),
+    expand = c(0, 0),
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    labels = mult_format(),
+    limits = c(0, 0.000025),
+  ) +
+  labs(x = "Size (kbs)", y = bquote("Density "(1 ~ x ~ 10^-5))) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    legend.position = "none",
+    axis.title = element_text(size = 25, face = "bold"),
+    axis.text = element_text(size = 20, face = "bold"),
+    plot.margin = margin(10, 30, 10, 10)
+  )
+
+hist.p2 <- ggplot() +
+  geom_density(
+    data = recurring_plasmid, aes(x = V2),
+    alpha = 0.5,
+    # blue
+    fill = "#39B185",
+    color = "#39B185",
+    size = 1
+  ) +
+  # ggtitle("Recurring Plasmids") +
+  scale_x_continuous(
+    limits = c(0, 100000),
+    breaks = c(seq(0, 100000, by = 10000)),
+    labels = c(seq(0, 90, by = 10), "100"),
+    expand = c(0, 0),
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    labels = mult_format()
+  ) +
+  labs(x = "Size (kbs)", y = bquote("Density "(1 ~ x ~ 10^-5))) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    legend.position = "none",
+    axis.title = element_text(size = 25, face = "bold"),
+    axis.text = element_text(size = 20, face = "bold"),
+    plot.margin = margin(10, 30, 10, 10)
+  )
+hist.p3 <- ggplot() +
+  geom_density(
+    data = single_phage, aes(x = V2),
+    alpha = 0.5,
+    # blue
+    fill = "#FFC61E",
+    color = "#FFC61E",
+    size = 1
+  ) +
+  # ggtitle("Singleton Phage") +
+  scale_x_continuous(
+    limits = c(0, 100000),
+    breaks = c(seq(0, 100000, by = 10000)),
+    labels = c(seq(0, 90, by = 10), "100"),
+    expand = c(0, 0),
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    labels = mult_format(),
+    limits = c(0, 0.00008),
+  ) +
+  labs(x = "Size (kbs)", y = bquote("Density "(1 ~ x ~ 10^-5))) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    legend.position = "none",
+    axis.title = element_text(size = 25, face = "bold"),
+    axis.text = element_text(size = 20, face = "bold"),
+    plot.margin = margin(10, 30, 10, 10)
+  )
+
+hist.p4 <- ggplot() +
+  geom_density(
+    data = recurring_phage, aes(x = V2),
+    alpha = 0.5,
+    # blue
+    fill = "#FFC61E",
+    color = "#FFC61E",
+    size = 1
+  ) +
+  # ggtitle("Recurring Phage") +
+  scale_x_continuous(
+    limits = c(0, 100000),
+    breaks = c(seq(0, 100000, by = 10000)),
+    labels = c(seq(0, 90, by = 10), "100"),
+    expand = c(0, 0),
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    labels = mult_format(),
+    limits = c(0, 0.00008)
+  ) +
+  labs(x = "Size (kbs)", y = bquote("Density "(1 ~ x ~ 10^-5))) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    legend.position = "none",
+    axis.title = element_text(size = 25, face = "bold"),
+    axis.text = element_text(size = 20, face = "bold"),
+    plot.margin = margin(10, 30, 10, 10)
+  )
+
+ggarrange(hist.p1, hist.p2, hist.p3, hist.p4,
+  ncol = 2,
+  nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  font.label = list(size = 25)
+)
+
+ggsave
+```
+
+All sample densities overlaid
+```{r}
+library(ggplot2)
+
+# display x axis without scientific notation
+options(scipen = 999)
+
+all.dens <- ggplot() +
+  geom_density(
+    data = subset(df[[1]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF",
+  ) +
+  geom_density(
+    data = subset(df[[2]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[3]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[4]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[5]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[6]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[7]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[8]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[9]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  geom_density(
+    data = subset(df[[10]], bases < 100000), aes(x = bases),
+    fill = "#0074FF40",
+    color = "#0074FF"
+  ) +
+  scale_x_continuous(
+    limits = c(0, 100000),
+    breaks = c(seq(0, 100000, by = 10000)),
+    labels = c(seq(0, 90, by = 10), "100"),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    breaks = c(seq(0, 0.00004, by = 0.00001)),
+    limits = c(0, 0.00004),
+    labels = c(seq(0, 3, by = 1), "4")
+  ) +
+  labs(x = "Size (kbs)", y = expression("Density "(1 ~ x ~ 10^-5))) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    plot.margin = margin(10, 30, 10, 10),
+    text = element_text(size = 25, face = "bold"),
+    axis.title = element_text(size = 25)
+  )
+
+# include recurring, singleton plas/phage in a 5 figure
+
+ggarrange(all.dens,
+  ggarrange(hist.p1, hist.p2,
+    ncol = 2,
+    labels = c("B", "C"),
+    font.label = c(size = 35),
+    vjust = 1.1
+  ),
+  ggarrange(hist.p3, hist.p4,
+    ncol = 2,
+    labels = c("D", "E"),
+    font.label = c(size = 35),
+    vjust = 1.1
+  ),
+  nrow = 3,
+  heights = c(2, 1, 1),
+  labels = c("A"),
+  font.label = c(size = 35)
+)
+```

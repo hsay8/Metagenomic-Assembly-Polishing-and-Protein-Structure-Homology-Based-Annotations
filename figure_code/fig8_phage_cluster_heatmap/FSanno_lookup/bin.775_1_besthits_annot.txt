@@ -1,0 +1,27 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+HNONIN_00005_hypothetical_protein 	A0A2E6K5C8	DUF551 domain-containing protein			1.0					
+HNONIN_00060_hypothetical_protein 	A0A420ERT4	CPBP family intramembrane metalloprotease			1.0		membrane [GO:0016020]	GO:0016020		
+HNONIN_00065_Muramidase_domain-containing_protein 	A0A0M4CQI5	Muramidase domain-containing protein			1.0				sphp:LH20_04475;	PF11860;
+HNONIN_00095_hypothetical_protein 	A0A0N0LXA4	Phage tail protein			1.0					
+HNONIN_00100_hypothetical_protein 	A0A4V3K9R0	DUF2793 domain-containing protein			1.0					PF10983;
+HNONIN_00105_hypothetical_protein 	A0A7Y0F939	deleted								
+HNONIN_00110_hypothetical_protein 	Q2G3Z4	Peptidase_M15_3 domain-containing protein			1.0				nar:Saro_2994;	PF08291;
+HNONIN_00120_hypothetical_protein 	A0A2E3FI52	HNH endonuclease			1.0		DNA binding [GO:0003677]; endonuclease activity [GO:0004519]	GO:0003677; GO:0004519		PF13392;
+HNONIN_00125_hypothetical_protein 	A0A3N5CND5	DNA transfer protein			1.0					
+HNONIN_00130_hypothetical_protein 	A0A0F9L708	Phage tail protein			1.0					
+HNONIN_00135_hypothetical_protein 	Q2G3Z1	Packaged DNA stabilization protein gp10			1.0				nar:Saro_2997;	PF11134;
+HNONIN_00140_hypothetical_protein 	Q2G3Z0	Head-to-tail adaptor			1.0				nar:Saro_2998;	PF11650;
+HNONIN_00145_hypothetical_protein 	A0A8B4NR14	Putative coat protein			1.0					PF11651;
+HNONIN_00160_hypothetical_protein 	Q2G3Y5	Phage P22-like portal protein			1.0				nar:Saro_3003;	PF16510;
+HNONIN_00165_PBSX_family_phage_terminase_large_subunit 	A0A3N5CNE5	PBSX family phage terminase large subunit			1.0					PF04466;PF17288;
+HNONIN_00170_hypothetical_protein 	A0A5B8LGV5	Terminase small subunit protein			1.0				spai:FPZ24_08215;	
+HNONIN_00200_hypothetical_protein 	A0A2E9CP58	AAA domain-containing protein			1.0					
+HNONIN_00210_Methyltransferase 	A0A562PUD1	Methyltransferase (EC 2.1.1.-)			1.0	N(4)/N(6)-methyltransferase family	DNA binding [GO:0003677]; N-methyltransferase activity [GO:0008170]; DNA methylation [GO:0006306]	GO:0003677; GO:0006306; GO:0008170		PF01555;
+HNONIN_00215_hypothetical_protein 	A0A257ZMP7	GIY-YIG domain-containing protein			1.0					PF01541;
+HNONIN_00225_hypothetical_protein 	A0A7Y0G998	VRR-NUC domain-containing protein			1.0		nucleic acid binding [GO:0003676]	GO:0003676		
+HNONIN_00245_hypothetical_protein 	A0A7Y9S7K4	HTH_7 domain-containing protein			1.0					
+HNONIN_00265_hypothetical_protein 	A0A4P5NTL7	Polymer-forming cytoskeletal protein			1.0					PF18836;
+HNONIN_00270_hypothetical_protein 	A0A220W6S0	DUF1805 domain-containing protein			1.0				sfla:SPHFLASMR4Y_01755;	
+HNONIN_00280_hypothetical_protein 	A0A2D5DM21	YqaJ-like viral recombinase			1.0					PF09588;
+HNONIN_00295_hypothetical_protein 	A0A249MVF9	DUF1905 domain-containing protein			1.0				shyd:CJD35_13515;	
+HNONIN_00300_hypothetical_protein 	G2IHS0	Phage protein			1.0				ssy:SLG_21680;	

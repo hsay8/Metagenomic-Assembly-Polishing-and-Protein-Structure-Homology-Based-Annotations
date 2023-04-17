@@ -1,0 +1,164 @@
+---
+title: "coverage_heatmap"
+author: "Henry"
+date: "2023-03-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Cov Heatmap
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+#though this dataset doesn't have overlapping names, it might be best practice to include the source sample for each contig so there's no overwriting of data.
+
+#set wd 
+p.covs.list <- list.files("./coverages_phage/", full.names=TRUE) #load up coverage bed files
+
+#Iterate over list of coverage files each representing individual contigs and read it into a table. At the same time, divide the length of the contig into 100 bins and assign the bins to each row. Add the source file into a column (since im including contigs from the secondary pipline, those assemblies will have headers that are named the same). 
+p.covs.df.list <- list()
+for (x in seq_along(p.covs.list)) {
+  a <- read.table(p.covs.list[x], sep = "\t", col.names = c("contig","start","end","cov"), colClasses = c("character", "numeric", "numeric", "numeric"))
+  a$bin <- as.integer(cut_interval(a$start, n = 100))
+  a$file <- as.character(p.covs.list[x])
+  #calculate standard deviation (for subsetting later, so the plot isn't so big)
+  a$std.dev <- sd(a$cov)
+  a$cont.mean <- mean(a$cov)
+  p.covs.df.list[[x]] <- a
+}
+
+#Calculate the mean coverage of each bin and put it into a new dataframe. Each contig should have 100 rows (1 row each bin)
+p.covs.means.dflist <- list()
+for (x in seq_along(p.covs.df.list)){
+  p.covs.means.dflist[[x]] <- p.covs.df.list[[x]] %>%
+    group_by(bin, contig, file, std.dev, cont.mean) %>%
+    summarize(bin.cov = mean(cov), .groups = "drop")
+}
+
+#Calculate mean coverage for each contig, get the ratio of meancoverage:sd into a new column
+for (x in seq_along(p.covs.means.dflist)){
+  p.covs.means.dflist[[x]] <- p.covs.means.dflist[[x]] %>% mutate(ratio = std.dev/cont.mean)
+}
+
+
+#Read tables into one dataframe
+p.covs <- do.call(rbind,p.covs.means.dflist)
+#remove prefix and suffix from file column
+p.covs$file <- sub("./coverages_phage/(.*?)\\+", "", p.covs$file)
+p.covs$file <- sub(".per-base.bed", "", p.covs$file)
+
+#this column is just for plotting the std dev as a single column adjacent to the main heatmap
+p.covs$plot <- 1
+
+##Make dataframe with longest alignment lengths: if an alignment is almost the full length of the plasmid (within 10%), label it on the plot
+align.len <- read.table("phage_longest_align.txt", col.names = c("Sample", "file", "Size", "Longest_align"), colClasses = c("character", "character", "numeric", "numeric"))
+
+align.len$full.len.align <- align.len$Size <= align.len$Longest_align
+p.covs <- merge(p.covs, align.len[,c("file","full.len.align")], by = "file")
+
+#get contigs with std.devs > 100 
+p.covs.filt <- subset(p.covs, std.dev > 50)
+```
+
+Create plots
+```{r}
+library(ggplot2)
+library(scales)
+library(ggpubr)
+library(patchwork)
+
+#only contigs filtered by above criteria (x > std dev)
+library(ggtext)
+library(ggplot2)
+library(scales)
+library(ggpubr)
+library(patchwork)
+library(dplyr)
+
+#For labelling the y axis
+labels_fmt <- function(x) {
+      ifelse(p.covs$full.len.align[match(x, p.covs$file)], paste0("**", x), x)
+}
+
+p.covs$colours <- ifelse(p.covs$ratio > 1, "#810000", "black")
+order.colours <- 
+  p.covs %>%
+  arrange(std.dev) %>%    # reorder the data frame by col2 in ascending order: ggplot goes bottom (first) top (last) when applying colors. 
+  distinct(file, .keep_all = TRUE)   # keep only the first occurrence of each value in col1
+
+
+#only contigs filtered by above criteria (x > std dev)
+ggplot(data = p.covs, aes(x = bin, y = reorder(file, std.dev), fill = bin.cov)) +
+  geom_tile(color=NA) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_fill_gradientn(trans = 'log10',
+                      colors = c("#ccdaff", "#2262ff","#001BFF", "#f51e05"),
+                      values = rescale(c(0,0.5,0.8,1)),
+                      guide = "colorbar",
+                      na.value = "#ccdaff")+
+  xlab("Percent Bins")+
+  ylab("Phage ACCs")+
+  labs(fill="Cov.")+
+  scale_y_discrete(labels = labels_fmt)+
+  theme(
+    panel.background = element_rect(fill = "#ccdaff"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_markdown(size = 10),
+    axis.text.y = element_text(color = order.colours$colours),
+    legend.key.size = unit(0.3, "cm")
+    )
+```
+
+Final version: remove the extra heat bars. Highlight ACCs instead that have ratios greater than 1
+
+```{r}
+library(ggtext)
+library(ggplot2)
+library(scales)
+library(ggpubr)
+library(patchwork)
+library(dplyr)
+
+#For labelling the y axis
+labels_fmt <- function(x) {
+      ifelse(p.covs.filt$full.len.align[match(x, p.covs.filt$file)], paste0("**", x), x)
+}
+
+p.covs.filt$colours <- ifelse(p.covs.filt$ratio > 1, "#810000", "black")
+order.colours <- 
+  p.covs.filt %>%
+  arrange(std.dev) %>%    # reorder the data frame by col2 in ascending order: ggplot goes bottom (first) top (last) when applying colors. 
+  distinct(file, .keep_all = TRUE)   # keep only the first occurrence of each value in col1
+
+
+#only contigs filtered by above criteria (x > std dev)
+ggplot(data = p.covs.filt, aes(x = bin, y = reorder(file, std.dev), fill = bin.cov)) +
+  geom_tile(color=NA) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_fill_gradientn(trans = 'log10',
+                      colors = c("#ccdaff", "#2262ff","#001BFF", "#f51e05"),
+                      values = rescale(c(0,0.5,0.8,1)),
+                      guide = "colorbar",
+                      na.value = "#ccdaff")+
+  xlab("Percent Bins")+
+  ylab("Phage ACCs")+
+  labs(fill="Cov.")+
+  scale_y_discrete(labels = labels_fmt)+
+  theme(
+    panel.background = element_rect(fill = "#ccdaff"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_markdown(size = 10),
+    axis.text.y = element_text(color = order.colours$colours),
+    legend.key.size = unit(0.3, "cm")
+    )
+```

@@ -1,0 +1,31 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+OFEFHM_00005_hypothetical_protein 	A0A5C7LVZ9	F5/8 type C domain-containing protein			1.0					
+OFEFHM_00010_hypothetical_protein 	A0A5C7LWH8	Capsid protein			1.0					
+OFEFHM_00020_hypothetical_protein 	A0A0F9FVE8	Tail tape measure protein			1.0		membrane [GO:0016020]	GO:0016020		
+OFEFHM_00035_hypothetical_protein 	A0A1H8J5H8	DUF429 domain-containing protein			1.0					
+OFEFHM_00040_hypothetical_protein 	A0A7C3QJT7	Major tail protein			1.0					
+OFEFHM_00050_hypothetical_protein 	A0A7C3QMT6	DUF2634 domain-containing protein			1.0					
+OFEFHM_00055_hypothetical_protein 	A0A7C3QIR8	Similar to			1.0					
+OFEFHM_00060_hypothetical_protein 	A0A5C7LHP9	Peptidase S74 domain-containing protein			1.0					
+OFEFHM_00075_hypothetical_protein 	A0A5C7PT23	Phage major capsid protein			1.0					
+OFEFHM_00095_hypothetical_protein 	A0A350P8R5	Phage capsid protein			1.0					
+OFEFHM_00105_hypothetical_protein 	A0A5C7LVJ7	Phage portal protein			1.0					
+OFEFHM_00110_hypothetical_protein 	A0A5C7PTB2	Terminase			1.0					
+OFEFHM_00115_hypothetical_protein 	A0A537X5J9	Helix-turn-helix DNA binding protein			1.0					
+OFEFHM_00125_hypothetical_protein 	A0A5C7QKB4	SLT domain-containing protein			1.0					PF01464;
+OFEFHM_00150_AAA_domain_containing_protein 	A0A4Q2YKV0	ATP-binding protein			1.0					
+OFEFHM_00155_hypothetical_protein 	A0A098GET6	DUF669 domain-containing protein			1.0				tmc:LMI_1683;	
+OFEFHM_00160_hypothetical_protein 	A0A2E0ENU0	Phage_rep_O domain-containing protein			1.0					
+OFEFHM_00170_hypothetical_protein 	A0A6B0XVD5	Lytic transglycosylase domain-containing protein			1.0	Virb1 family				PF01464;
+OFEFHM_00180_hypothetical_protein 	A0A0S8IL30	Tyrosine recombinase XerD	FUNCTION: Site-specific tyrosine recombinase, which acts by catalyzing the cutting and rejoining of the recombining DNA molecules. The XerC-XerD complex is essential to convert dimers of the bacterial chromosome into monomers to permit their segregation at cell division. It also contributes to the segregational stability of plasmids. {ECO:0000256|HAMAP-Rule:MF_01807}.		2.0	'phage' integrase family, XerD subfamily	cytoplasm [GO:0005737]; DNA binding [GO:0003677]; tyrosine-based site-specific recombinase activity [GO:0009037]; cell cycle [GO:0007049]; cell division [GO:0051301]; chromosome segregation [GO:0007059]; transposition, DNA-mediated [GO:0006313]	GO:0003677; GO:0005737; GO:0006313; GO:0007049; GO:0007059; GO:0009037; GO:0051301		PF02899;PF00589;
+OFEFHM_00185_VRR-NUC_domain-containing_protein 	U4QYV3	Norphogenetic protein			1.0		nuclease activity [GO:0004518]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0004518		PF08774;
+OFEFHM_00210_hypothetical_protein 	A0A5C7PTC1	ASCH domain-containing protein			1.0					
+OFEFHM_00220_Putative_phage_associated_protein 	A0A5E4PI16	BPL/LPL catalytic domain-containing protein			1.0				asip:AQUSIP_12620;	
+OFEFHM_00280_hypothetical_protein 	A0A7K4MW93	Type II toxin-antitoxin system HicB family antitoxin			1.0					
+OFEFHM_00290_hypothetical_protein 	A0A0F9TP53	DUF2190 family protein			1.0					
+OFEFHM_00295_hypothetical_protein 	A0A0G0F6G7	Beta_helix domain-containing protein			1.0		polysaccharide catabolic process [GO:0000272]	GO:0000272		
+OFEFHM_00300_hypothetical_protein 	A0A7V5RA34	MmcB family DNA repair protein			1.0					
+OFEFHM_00305_hypothetical_protein 	A0A537ZZD3	Beta_helix domain-containing protein			1.0					
+OFEFHM_00330_hypothetical_protein 	A0A843GF21	Lipoprotein			1.0					
+OFEFHM_00345_hypothetical_protein 	X1LXS9	Ig-like_bact domain-containing protein			1.0					
+OFEFHM_00350_hypothetical_protein 	J9M4U2	deleted								

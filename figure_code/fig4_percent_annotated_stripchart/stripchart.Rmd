@@ -1,0 +1,258 @@
+---
+title: "stripchart"
+author: "Henry"
+date: '2022-12-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Initialize data for number of annotations containing KO/GO pathways
+```{r}
+# get list of files in current working directory
+files <- list.files(path = "./with_terms/", pattern = ".txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files to create a list of dataframes
+df <- lapply(files, function(x) {
+  a <- read.table(x, col.names = c("sample", "num_cds", "bakta_pred", "foldseek_pred_GO", "foldseek_pred_KO"), colClasses = c("character", "numeric", "numeric", "numeric", "numeric"))
+})
+
+# rename df's to its sample name (without the extension and _num_predictions suffix)
+names(df) <- gsub("_num_path_annos", "", tools::file_path_sans_ext(list.files(path = "./with_terms", pattern = ".txt", recursive = FALSE)))
+
+list2env(df, envir = .GlobalEnv)
+```
+
+Create new dataframe with all data in one dataframe for plotting
+```{r}
+# DF FOR ALL SAMPLES
+all <- data.frame(Sample = character(), Percent = numeric(), Method = character())
+
+# iterate over list of dataframes (samples)
+for (i in 1:length(df)) {
+  y <- data.frame(df[i])
+  # iterate over each row, append to total dataframe
+  for (x in 1:nrow(y)) {
+    all[nrow(all) + 1, ] <- c(names(df[i]), (y[x, 3]) / (y[x, 2]), "Bakta")
+    all[nrow(all) + 1, ] <- c(names(df[i]), ((y[x, 4]) + y[x, 5]) / (y[x, 2]), "Colabfold/Foldseek")
+  }
+}
+
+all["Percent"][all["Percent"] == 1] <- 0
+
+#-----------------------------------------
+
+# DF FOR SINGLE SAMPLE (T2_may3-21)
+s <- data.frame(Sample = character(), Percent = numeric(), Method = character())
+
+# build dataframe - calculate percent annotations
+for (i in 1:nrow(`GAC6`)) {
+  s[nrow(s) + 1, ] <- c("GAC6", (`GAC6`[i, 3]) / (`GAC6`[i, 2]), "Bakta")
+  s[nrow(s) + 1, ] <- c("GAC6", (GAC6[i, 4] + GAC6[i,5]) / GAC6[i, 2], "Colabfold/Foldseek")
+}
+```
+
+
+#Create single plot for percent of annotations containing KEGG/GO  (representing all samples)
+```{r}
+library(ggplot2)
+
+path.anno <- ggplot(all, aes(x = Sample, y = as.numeric(Percent) * 100, color = Method)) +
+  geom_jitter(position = position_jitterdodge(
+    jitter.width = 0.3,
+    dodge.width = 0.6
+    ),
+    size = 4,
+    alpha = 0.5
+  ) +
+  #scale_y_continuous(expand = c(0,0))+
+  coord_cartesian(ylim=c(0,40)
+                  )+
+  labs( # title="CDS' containing Pathway Annotations (GO/KEGG) by Method",
+    x = "Sample", y = "Annotations with KEGG/GO Terms (%)"
+  ) +
+  stat_summary(
+    aes(color = Method),
+    linewidth = 1,
+    fun.data = "mean_sdl",
+    fun.args = list(mult = 1),
+    shape = 18,
+    size = 1.3,
+    na.rm = TRUE
+  ) +
+  scale_color_manual(values = c("#FF507A", "#0082ff")) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    axis.title = element_text(size = 13, face = "bold"),
+    axis.text = element_text(size = 15),
+  )
+```
+
+#Create single plot for percent of annotations containing KEGG and/or GO  (representing T2_may3)
+```{r}
+library(ggplot2)
+
+# panel 2
+strip.p2 <- ggplot(s, aes(x = Sample, y = as.numeric(Percent) * 100, color = Method)) +
+  geom_jitter(
+    position = position_jitterdodge(
+      jitter.width = 0.3,
+      dodge.width = 0.6
+    ),
+    size = 4,
+    alpha = 0.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 25),
+  ) +
+  labs( # title="CDS' containing Pathway Annotations (GO/KEGG) by Method",
+    x = "Sample", y = "Annotations with KEGG/GO Terms (%)"
+  ) +
+  stat_summary(aes(color = Method),
+    linewidth = 1,
+    fun.data = "mean_sdl",
+    fun.args = list(mult = 1),
+    shape = 15,
+    size = 1.3,
+    na.rm = TRUE
+  ) +
+  scale_color_manual(values = c("#FF507A", "#0082ff")) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 10)
+  )
+```
+
+
+Initialize data for number of hypotheticals 
+```{r}
+# get list of files in current working directory
+files2 <- list.files(path = "./with_identifiable_protein/", pattern = ".txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files to create a list of dataframes
+df2 <- lapply(files2, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("contig", "num_cds", "num_hypoth", "foldseek_pred"), colClasses = c("character", "numeric", "numeric", "numeric"))
+})
+
+# rename df's to its sample name (without the extension and _num_predictions suffix)
+names(df2) <- gsub("_num_hypoths", "", tools::file_path_sans_ext(list.files(path = "./with_identifiable_protein", pattern = ".txt", recursive = FALSE)))
+
+list2env(df2, envir = .GlobalEnv)
+```
+
+Create new dataframe with all data in one dataframe for plotting
+```{r}
+# FOR ALL SAMPLES
+all2 <- data.frame(Sample = character(), Percent = numeric(), Method = character())
+
+# iterate over list of dataframes (samples)
+for (i in 1:length(df2)) {
+  y <- data.frame(df2[i])
+  # iterate over each row, append to total dataframe
+  for (x in 1:nrow(y)) {
+    all2[nrow(all2) + 1, ] <- c(names(df2[i]), (y[x, 2] - y[x, 3]) / (y[x, 2]), "Bakta")
+    all2[nrow(all2) + 1, ] <- c(names(df2[i]), ((y[x, 2]) - (y[x, 3] - y[x, 4])) / (y[x, 2]), "Colabfold/Foldseek")
+  }
+}
+
+# FOR SINGLE SAMPLE
+s2 <- data.frame(Sample = character(), Percent = numeric(), Method = character())
+y <- `GAC6`
+
+# calculate percent annotations
+for (x in 1:nrow(`GAC6`)) {
+  s2[nrow(s2) + 1, ] <- c("GAC6", (y[x, 2] - y[x, 3]) / (y[x, 2]), "Bakta")
+  s2[nrow(s2) + 1, ] <- c("GAC6", ((y[x, 2]) - (y[x, 3] - y[x, 4])) / (y[x, 2]), "Colabfold/Foldseek")
+}
+```
+
+#Create single plot for percent of identifiable proteins (non-hypotheticals) (representing all samples)
+```{r}
+library(ggplot2)
+
+iden <- ggplot(all2, aes(x = Sample, y = as.numeric(Percent) * 100, color = Method)) +
+  geom_jitter(
+    position = position_jitterdodge(
+      jitter.width = 0.3,
+      dodge.width = 0.6
+    ),
+    size = 4,
+    alpha = 0.5
+  ) +
+  #scale_y_continuous(expand = c(0,0)) +
+  coord_cartesian(ylim=c(0,100)
+                  )+
+  labs( # title = "Percent of Identifiable Proteins by Method In Phages",
+    x = "Sample", y = "Identifiable Proteins (%)"
+  ) +
+  stat_summary(aes(group = Method),
+    linewidth = 1,
+    fun.data = "mean_sdl",
+    fun.args = list(mult = 1),
+    shape = 18,
+    size = 1.3,
+    na.rm = FALSE
+  ) +
+  scale_color_manual(values = c("#FF507A", "#0082ff")) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    axis.title = element_text(size = 13, face = "bold"),
+    axis.text = element_text(size = 15)
+  )
+```
+
+#Create single plot for percent of identifiable proteins (non-hypothetical) (representing T2_may3)
+```{r}
+library(ggplot2)
+
+strip.p1 <- ggplot(s2, aes(x = Sample, y = as.numeric(Percent) * 100, color = Method)) +
+  geom_jitter(
+    position = position_jitterdodge(
+      jitter.width = 0.3,
+      dodge.width = 0.6
+    ),
+    size = 4,
+    alpha = 0.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+  ) +
+  labs( # title = "Percent of Identifiable Proteins by Method In Phages",
+    x = "Sample", y = "Identifiable Proteins (%)"
+  ) +
+  stat_summary(aes(color = Method),
+    linewidth = 1,
+    fun.data = "mean_sdl",
+    fun.args = list(mult = 1),
+    shape = 18,
+    size = 1.3,
+    na.rm = TRUE
+  ) +
+  scale_color_manual(values = c("#FF507A", "#0082ff")) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 10)
+  )
+```
+
+Side by side of plots representing all samples
+```{r}
+library(gridExtra)
+library(ggpubr)
+
+ggarrange(iden, path.anno,
+                  ncol = 1, 
+                  nrow = 2,
+                  labels = c("A","B"),
+                  common.legend = TRUE,
+                  legend = "right"
+                  )
+```

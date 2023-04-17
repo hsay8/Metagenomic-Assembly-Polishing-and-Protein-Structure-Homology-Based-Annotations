@@ -1,0 +1,219 @@
+---
+title: "barplot"
+author: "Henry"
+date: "2023-01-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Annotation likelihood by CDS size
+
+Initialize data
+```{r}
+library(dplyr)
+library(tidyverse)
+
+# get list of files in current working directory
+size.files <- list.files(path = "./annot_by_cds_size/", pattern = ".txt", full.names = TRUE, recursive = FALSE)
+fsannot.files <- list.files(path = "./annot_by_tag/", pattern = "fsannot_by_tag.txt", full.names = TRUE, recursive = FALSE)
+bkannot.files <- list.files(path = "./annot_by_tag/", pattern = "bkannot_by_tag.txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files to create a list of dataframes
+size.df <- lapply(size.files, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("locus_tag", "cds_size"), colClasses = c("character", "numeric"))
+})
+bkannot.df <- lapply(bkannot.files, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("locus_tag", "Bakta"), colClasses = c("character", "character"))
+})
+fsannot.df <- lapply(fsannot.files, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("locus_tag", "Foldseek"), colClasses = c("character", "character"))
+})
+
+# rename df's to its sample name (without the extension and _num_predictions suffix)
+names(size.df) <- gsub("_CDS_by_size", "", tools::file_path_sans_ext(list.files(path = "./annot_by_cds_size", pattern = ".txt", recursive = FALSE)))
+names(bkannot.df) <- gsub("_bkannot_by_tag", "", tools::file_path_sans_ext(list.files(path = "./annot_by_tag", pattern = "bkannot_by_tag.txt", recursive = FALSE)))
+names(fsannot.df) <- gsub("_fsannot_by_tag", "", tools::file_path_sans_ext(list.files(path = "./annot_by_tag", pattern = "fsannot_by_tag.txt", recursive = FALSE)))
+
+
+# list2env(size.df, envir=.GlobalEnv)
+# list2env(bkannot.df, envir=.GlobalEnv)
+# list2env(fsannot.df, envir=.GlobalEnv)
+
+# initialize dataframe
+size.all <- data.frame(locus_tag = character(), size = numeric())
+
+# collapse list of dataframes into single dataframe representing all CDS predicted from all samples
+# seems redundant to make a list and collpase it, but I generated the list of dataframes earlier just in case I want to check on a sample basis
+size.total <- bind_rows(size.df)
+fsannot.total <- bind_rows(fsannot.df)
+bkannot.total <- bind_rows(bkannot.df)
+
+# strip whitespace
+size.total <- size.total %>%
+  mutate_all(str_trim)
+fsannot.total <- fsannot.total %>%
+  mutate_all(str_trim)
+bkannot.total <- bkannot.total %>%
+  mutate_all(str_trim)
+
+a <- merge(size.total, fsannot.total, all = TRUE, by.y = "locus_tag") %>%
+  replace_na(list(Foldseek = "N"))
+
+a$cds_size <- as.numeric(a$cds_size)
+a <- subset(a, cds_size > 0)
+
+b <- merge(size.total, bkannot.total, all = TRUE, by = "locus_tag") %>%
+  replace_na(list(Bakta = "Y"))
+
+b$cds_size <- as.numeric(b$cds_size)
+b <- subset(b, cds_size > 0)
+
+c <- merge(a, b, all = TRUE, by = c("locus_tag", "cds_size"))
+
+#Y = 1, N = 0
+a$Foldseek[a$Foldseek == "Y"] <- 1
+a$Foldseek[a$Foldseek == "N"] <- 0
+a$Foldseek <- as.numeric(a$Foldseek)
+
+
+b$Bakta[b$Bakta == "Y"] <- 1
+b$Bakta[b$Bakta == "N"] <- 0
+b$Bakta <- as.numeric(b$Bakta)
+
+
+
+```
+
+Histogram
+```{r}
+library(ggplot2)
+library(ggnewscale)
+
+anno.cds.hist <- ggplot() +
+  #colabfold/foldseek results
+  geom_histogram(
+    data = c,
+    aes(
+      x = cds_size,
+      fill = Foldseek
+    ),
+    position = "fill",
+    binwidth = 500,
+    breaks = c(seq(0, 12000, by = 500)),
+  ) +
+  scale_fill_manual(values = c("#00000000", "#0074FF")) +
+  new_scale_fill() +
+  #bakta results
+  geom_histogram(
+    data = c,
+    aes(
+      x = cds_size,
+      fill = Bakta
+    ),
+    position = "fill",
+    binwidth = 500,
+    breaks = c(seq(0, 12000, by = 500)),
+    color = "#FFFFFF"
+  ) +
+  scale_fill_manual(values = c("#00000000", "#FF507A")) +
+  scale_x_continuous(
+    limits = c(0, 6000),
+    breaks = c(seq(0, 12000, by = 1000)),
+    labels = c(seq(0, 11, by = 1), "12"),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    labels = c(seq(0, 75, by = 25), "100"),
+  ) +
+  labs(
+    x = "CDS Size (kbp)",
+    y = "Identifiable Proteins (%)"
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    legend.position = "none",
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 10)
+  )
+```
+
+Histogram (counts)
+```{r}
+library(ggplot2)
+library(ggnewscale)
+
+#remove all N's cause ggplot isn't counting properly and doing weird stuff
+a <- subset(a, Foldseek == 1, select = c(cds_size, Foldseek))
+b <- subset(b, Bakta == 1, select = c(cds_size, Bakta))
+
+anno.cds.counts <- ggplot() +
+  # colabfold/foldseek results
+  geom_histogram(
+    data = a,
+    #stat = "count",
+    aes(
+      x = cds_size,
+    ),
+    binwidth = 500,
+    breaks = c(seq(0, 12000, by = 500)),
+    fill = "#0074FF",
+    color = "#FFFFFF",
+  ) +
+  geom_histogram(
+    data = b,
+    #stat = "count",
+    aes(
+      x = cds_size,
+    ),
+    binwidth = 500,
+    breaks = c(seq(0, 12000, by = 500)),
+    fill = "#FF507A",
+    color = "#FFFFFF",
+  ) +
+  scale_x_continuous(
+    limits = c(0, 6000),
+    breaks = c(seq(0, 12000, by = 1000)),
+    labels = c(seq(0, 11, by = 1), "12"),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(expand = c(0,0), 
+                     trans='sqrt'
+                     ) +
+  labs(
+    x = "CDS Size (kbp)",
+    y = "Identifiable Proteins"
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    legend.position = "bottom",
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 10),
+    legend.title = "Method",
+    legend.text = ""
+    )
+   
+
+
+library(gridExtra)
+library(ggpubr)
+
+two.pan <- ggarrange(anno.cds.counts, anno.cds.hist,
+          ncol = 2, 
+          labels = c("A","B"),
+          font.label = list(size = 15),
+          common.legend = TRUE,
+          legend = "bottom",
+          heights = c(1,0.7)
+          )
+
+legend <- g_legend(two.pan)
+
+
+ggsave("anno_by_cds_2pan.png", path = "C:/Users/hh_sa/Desktop/Figures/", device = "png", width = 7, height = 3, units = "in", dpi = 300)
+```

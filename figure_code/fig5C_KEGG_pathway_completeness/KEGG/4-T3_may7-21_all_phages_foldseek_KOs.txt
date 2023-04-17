@@ -1,0 +1,7 @@
+
+cser:CCO03_08700	ko:K07451
+gca:Galf_2031	ko:K02314
+mhaq:WC39_04535	ko:K22302
+mhay:VK67_04535	ko:K22302
+pde:Pden_0261	ko:K06223
+shyd:CJD35_13625	ko:K17680

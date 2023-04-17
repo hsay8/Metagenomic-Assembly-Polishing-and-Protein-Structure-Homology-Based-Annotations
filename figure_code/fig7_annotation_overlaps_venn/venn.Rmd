@@ -1,0 +1,243 @@
+---
+title: "venn_diagram"
+author: "Henry"
+date: '2022-12-16'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Initialize data (protein)
+```{r}
+# get list of files, foldseek and bakta results separate
+files_fs <- list.files(path = "./pfam", pattern = "bakta_pfam.txt", full.names = TRUE, recursive = FALSE)
+files_bk <- list.files(path = "./pfam", pattern = "foldseek_pfam.txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files
+df_fs <- lapply(files_fs, function(x) {
+  a <- read.table(x, col.names = c("locus_tag", "fs_accession"), colClasses = c("character", "character"))
+})
+
+df_bk <- lapply(files_bk, function(x) {
+  a <- read.table(x, col.names = c("locus_tag", "bk_accession"), colClasses = c("character", "character"))
+})
+
+
+# rename df's to corresponding file names
+names(df_fs) <- files_fs
+names(df_bk) <- files_bk
+
+list2env(df_fs, envir = .GlobalEnv)
+
+list2env(df_bk, envir = .GlobalEnv)
+```
+Combine bakta and foldseek tables, total number of agreeing protein product annotations across all samples 
+```{r}
+library(ggVennDiagram)
+
+all <- merge(df_fs[[1]], df_bk[[1]], by = "locus_tag", )
+a <- list(all$fs_accession, all$bk_accession)
+names(a) <- c("Foldseek", "Bakta")
+
+ggVennDiagram(a)
+```
+Initialize data (Pathway) WIP
+```{r}
+
+# get list of files, foldseek and bakta results separate
+files_fs <- list.files(path = "./pathway", pattern = "bakta_hits_accessions.txt", full.names = TRUE, recursive = FALSE)
+files_bk <- list.files(path = "./pathway", pattern = "foldseek_hits_accessions.txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files
+df_fs <- lapply(files_fs, function(x) {
+  a <- read.table(x, col.names = c("locus_tag", "fs_accession"), colClasses = c("character", "character"))
+})
+
+df_bk <- lapply(files_bk, function(x) {
+  a <- read.table(x, col.names = c("locus_tag", "bk_accession"), colClasses = c("character", "character"))
+})
+
+
+# rename df's to corresponding file names
+names(df_fs) <- files_fs
+names(df_bk) <- files_bk
+
+list2env(df_fs, envir = .GlobalEnv)
+
+list2env(df_bk, envir = .GlobalEnv)
+```
+
+```{r}
+library(ggVennDiagram)
+
+all <- merge(df_fs[[1]], df_bk[[1]], by = "locus_tag", )
+a <- list(all$fs_accession, all$bk_accession)
+names(a) <- c("Foldseek", "Bakta")
+
+ggVennDiagram(a)
+```
+
+Initialize data (PFAM)
+```{r}
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+# get list of files, foldseek and bakta results separate
+files_fs3 <- list.files(path = "./pfam", pattern = "foldseek_pfam.txt", full.names = TRUE, recursive = FALSE)
+files_bk3 <- list.files(path = "./pfam", pattern = "bakta_pfam.txt", full.names = TRUE, recursive = FALSE)
+
+# read table on list of files
+df_fs3 <- lapply(files_fs3, function(x) {
+  a <- read.csv(x, sep = "\t", header = FALSE, col.names = c("locus_tag", "fs_pfam"), colClasses = c("character", "character"))
+})
+
+df_bk3 <- lapply(files_bk3, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("locus_tag", "bk_pfam"), colClasses = c("character", "character"))
+})
+
+# go through foldseek output, and split up any loci with multiple pfams, append as a new row
+df_fs3 <- lapply(df_fs3, function(f) {
+  f %>%
+    mutate(fs_pfam = strsplit(as.character(fs_pfam), ";")) %>%
+    unnest(fs_pfam)
+})
+
+# go through bakta tables in list, remove "." trailing string
+df_bk3 <- lapply(df_bk3, function(y) {
+  y %>%
+    mutate(bk_pfam = gsub("\\..*", "", bk_pfam))
+})
+
+# rename df's to corresponding file names
+names(df_fs3) <- files_fs3
+names(df_bk3) <- files_bk3
+
+list2env(df_fs3, envir = .GlobalEnv)
+list2env(df_bk3, envir = .GlobalEnv)
+```
+Generates Venn where if a locus has at least one match, its counts that as bakta and foldseek agreeing. This only looks at loci that both foldseek and bakta have a pfam for.
+```{r}
+library(ggVennDiagram)
+library(tidyverse)
+# Merge by locus_tag (keeps only locus that foldseek and bakta BOTH have a pfam for), add foldseek and bakta pfam columns
+# Note this only merges the first df in the list of df (so to do separate venn's for each sample, change the index)
+all3 <- merge(df_fs3[[2]], df_bk3[[2]], by = "locus_tag")
+
+# Merge data frame all samples
+all3 <- setNames(data.frame(matrix(ncol = 3, nrow = 0)), c("locus_tag", "fs_pfam", "bk_pfam"))
+for (i in 1:length(df_fs3)) {
+  x <- merge(df_fs3[[i]], df_bk3[[i]], by = "locus_tag")
+  all3 <- rbind(all3, x)
+}
+
+# strip whitespaces (important for the next step where we're doing string matching)
+all3 <- all3 %>%
+  mutate_all(str_trim)
+
+# remove duplicate rows
+all3 <- all3 %>%
+  distinct(.keep_all = TRUE)
+
+## If a single locus has two pfam fs hits, and has one matching pair of pfams, remove the rows that are not matching
+
+# if a locus has multiple pfam hits, keep only the one row for that locus that has a match
+matches <- all3[duplicated(all3$locus_tag) & all3$fs_pfam == all3$bk_pfam, ]
+
+# get all loci without multiple hits
+`%!in%` <- Negate(`%in%`)
+no_dup <- all3[!duplicated(all3$locus_tag) & all3$locus_tag %!in% matches$locus_tag, ]
+
+# merge the two tables
+venn_dat <- merge(matches, no_dup, all = TRUE)
+
+# at this point, loci will either have its match(es) or no matches at all. remove duplicated locus tags so we don't count for a locus twice
+venn_dat <- venn_dat[!duplicated(venn_dat$locus_tag), ]
+
+# Turn df into a list for plotting in the venn diagram
+venn_dat <- list(venn_dat$fs_pfam, venn_dat$bk_pfam)
+names(venn_dat) <- c("Foldseek", "Bakta")
+
+venn <- Venn(venn_dat)
+data <- process_data(venn)
+pfam.pairs <- ggplot() +
+  # 1. region count layer
+  geom_sf(aes(fill = count), data = venn_region(data),show.legend = FALSE) +
+  # 2. set edge layer
+  geom_sf(aes(color = name), data = venn_setedge(data), show.legend = FALSE, size = 3) +
+  # 3. set label layer
+  geom_sf_text(aes(label = name), data = venn_setlabel(data), size = 10) +
+  # 4. region label layer
+  geom_sf_label(aes(label = paste0(count, " (", scales::percent(count/sum(count), accuracy = 2), ")")), 
+                data = venn_region(data),
+                size = 5) +
+  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF")+
+  scale_color_manual(values = c("Colabfold/Foldseek" = "#0082ff","Bakta" ="#FF507A"))+
+scale_x_continuous(expand = expansion(mult = .3)) +
+  theme_void()
+
+```
+
+Venn including comparisons of every pfam hit (so no filtering as above)
+```{r}
+library(ggVennDiagram)
+library(ggplot2)
+library(ggpubr)
+
+# Merge by locus_tag, add foldseek and bakta pfam columns
+# Note this only merges the first df in the list of df (so to do separate venn's for each sample, change the index)
+all4 <- merge(df_fs3[[1]], df_bk3[[1]], by = "locus_tag", all = TRUE)
+
+# Across all samples
+all4 <- setNames(data.frame(matrix(ncol = 3, nrow = 0)), c("locus_tag", "fs_pfam", "bk_pfam"))
+for (i in seq_along(df_fs3)) {
+  x <- merge(df_fs3[[i]], df_bk3[[i]], by = "locus_tag", all = TRUE)
+  all4 <- rbind(all4, x)
+}
+
+# strip whitespaces
+all4 <- all4 %>%
+  mutate_all(str_trim)
+# remove duplicate rows
+all4 <- all4 %>%
+  distinct(.keep_all = TRUE)
+
+venn_dat2 <- all4
+
+#don't need duplicate
+#unique(venn_dat2$fs_pfam)
+#unique(venn_dat2$bk_pfam)
+
+#turn columns into lists for plotting on ggVenn
+venn_dat2 <- list(na.omit(venn_dat2$fs_pfam), na.omit(venn_dat2$bk_pfam))
+names(venn_dat2) <- c("Foldseek", "Bakta")
+
+venn2 <- Venn(venn_dat2)
+data2 <- process_data(venn2)
+pfam.all <- ggplot() +
+  # 1. region count layer
+  geom_sf(aes(fill = count), data = venn_region(data2),show.legend = FALSE) +
+  # 2. set edge layer
+  geom_sf(aes(color = name, size = 200), data = venn_setedge(data2), show.legend = FALSE) +
+  # 3. set label layer
+  geom_sf_text(aes(label = name), data = venn_setlabel(data2), size = 10) +
+  # 4. region label layer
+  geom_sf_label(aes(label = paste0(count, " (", scales::percent(count/sum(count), accuracy = 2), ")")), 
+                data = venn_region(data2),
+                size = 5) +
+  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF")+
+  scale_color_manual(values = c("Foldseek" = "#0082ff","Bakta" ="#FF507A"))+
+scale_x_continuous(expand = expansion(mult = .3)) +
+  theme_void()
+
+ggarrange(pfam.all, pfam.pairs,
+                  ncol = 2,
+                  nrow = 1,
+                  labels = c("A","B"),
+          label.y = 0.72,
+          font.label = list(size = 18)
+                  )
+
+```

@@ -1,0 +1,5 @@
+
+beb:AEM42_14935	ko:K03111
+pde:Pden_0261	ko:K06223
+slt:Slit_1965	ko:K03111
+tbh:Tbon_02175	ko:K01160

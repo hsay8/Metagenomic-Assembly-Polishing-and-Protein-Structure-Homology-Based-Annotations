@@ -1,0 +1,34 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+NHDNGA_00010_hypothetical_protein 	A0A7C3QIU7	Site-specific DNA-methyltransferase (adenine-specific)			1.0					
+NHDNGA_00015_hypothetical_protein 	A0A7C3QJT7	Major tail protein			1.0					
+NHDNGA_00025_hypothetical_protein 	A0A7C3QMT6	DUF2634 domain-containing protein			1.0					
+NHDNGA_00030_hypothetical_protein 	A0A7C3QIR8	Similar to			1.0					
+NHDNGA_00035_hypothetical_protein 	A0A5C7LHP9	Peptidase S74 domain-containing protein			1.0					
+NHDNGA_00045_hypothetical_protein 	A0A1F8XBX6	Minor capsid protein 10B			1.0					PF05065;
+NHDNGA_00055_hypothetical_protein 	A0A847A818	HK97 gp10 family phage protein			1.0					PF05069;
+NHDNGA_00060_hypothetical_protein 	A0A350P8R5	Phage capsid protein			1.0					
+NHDNGA_00065_hypothetical_protein 	A0A5C7LVJ7	Phage portal protein			1.0					
+NHDNGA_00070_hypothetical_protein 	A0A5C7LWA7	Terminase_6 domain-containing protein			1.0					
+NHDNGA_00075_hypothetical_protein 	A0A537X5J9	Helix-turn-helix DNA binding protein			1.0					
+NHDNGA_00085_hypothetical_protein 	A0A5C7QKB4	SLT domain-containing protein			1.0					PF01464;
+NHDNGA_00105_AAA_domain_containing_protein 	A0A4Q2YKV0	ATP-binding protein			1.0					
+NHDNGA_00110_hypothetical_protein 	A0A098GET6	DUF669 domain-containing protein			1.0				tmc:LMI_1683;	
+NHDNGA_00115_hypothetical_protein 	A0A2E0ENU0	Phage_rep_O domain-containing protein			1.0					
+NHDNGA_00130_hypothetical_protein 	A0A1M3HQH1	SLT domain-containing protein			1.0					PF01464;
+NHDNGA_00140_hypothetical_protein 	A0A0S8IL30	Tyrosine recombinase XerD	FUNCTION: Site-specific tyrosine recombinase, which acts by catalyzing the cutting and rejoining of the recombining DNA molecules. The XerC-XerD complex is essential to convert dimers of the bacterial chromosome into monomers to permit their segregation at cell division. It also contributes to the segregational stability of plasmids. {ECO:0000256|HAMAP-Rule:MF_01807}.		2.0	'phage' integrase family, XerD subfamily	cytoplasm [GO:0005737]; DNA binding [GO:0003677]; tyrosine-based site-specific recombinase activity [GO:0009037]; cell cycle [GO:0007049]; cell division [GO:0051301]; chromosome segregation [GO:0007059]; transposition, DNA-mediated [GO:0006313]	GO:0003677; GO:0005737; GO:0006313; GO:0007049; GO:0007059; GO:0009037; GO:0051301		PF02899;PF00589;
+NHDNGA_00145_VRR-NUC_domain-containing_protein 	U4QYV3	Norphogenetic protein			1.0		nuclease activity [GO:0004518]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0004518		PF08774;
+NHDNGA_00170_hypothetical_protein 	A0A5C7PTC1	ASCH domain-containing protein			1.0					
+NHDNGA_00180_Putative_phage_associated_protein 	A0A5E4PI16	BPL/LPL catalytic domain-containing protein			1.0				asip:AQUSIP_12620;	
+NHDNGA_00190_hypothetical_protein 	A0A354A4M2	Fibronectin type-III domain-containing protein			1.0		membrane [GO:0016020]	GO:0016020		
+NHDNGA_00240_hypothetical_protein 	A0A7K4MW93	Type II toxin-antitoxin system HicB family antitoxin			1.0					
+NHDNGA_00250_hypothetical_protein 	A0A0F9TP53	DUF2190 family protein			1.0					
+NHDNGA_00255_hypothetical_protein 	A0A0G0F6G7	Beta_helix domain-containing protein			1.0		polysaccharide catabolic process [GO:0000272]	GO:0000272		
+NHDNGA_00260_hypothetical_protein 	A0A7V5RA34	MmcB family DNA repair protein			1.0					
+NHDNGA_00265_hypothetical_protein 	A0A537ZZD3	Beta_helix domain-containing protein			1.0					
+NHDNGA_00270_hypothetical_protein 	A0A0F9VP99	Tail protein			1.0					
+NHDNGA_00290_hypothetical_protein 	A0A0A2I023	Sulfatase domain-containing protein			1.0					
+NHDNGA_00305_hypothetical_protein 	X1LXS9	Ig-like_bact domain-containing protein			1.0					
+NHDNGA_00310_hypothetical_protein 	A0A3Q2CAA8	Collagen, type XI, alpha 1a			1.0		extracellular matrix structural constituent [GO:0005201]	GO:0005201		PF01410;PF01391;
+NHDNGA_00315_hypothetical_protein 	A0A5C7LVZ9	F5/8 type C domain-containing protein			1.0					
+NHDNGA_00320_hypothetical_protein 	A0A5C7LWH8	Capsid protein			1.0					
+NHDNGA_00325_hypothetical_protein 	A0A5C7PTE9	Phage tail tape measure protein			1.0					

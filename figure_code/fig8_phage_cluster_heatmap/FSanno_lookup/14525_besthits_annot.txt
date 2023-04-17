@@ -1,0 +1,44 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+NJAFHF_00005_hypothetical_protein 	A0A2E3DDL6	Phage_Mu_F domain-containing protein			1.0					
+NJAFHF_00015_hypothetical_protein 	A0A6H1Z9A5	Putative portal protein			1.0					PF05133;
+NJAFHF_00020_hypothetical_protein 	A0A5C7PDV5	Tail fiber protein			1.0					
+NJAFHF_00025_hypothetical_protein 	A0A346N4F4	Mtd_N domain-containing protein			1.0				sok:D0B54_17935;	
+NJAFHF_00030_hypothetical_protein 	A0A7C3V220	Mtd_N domain-containing protein			1.0					
+NJAFHF_00035_hypothetical_protein 	A0A2H0QHD9	Phage protein			1.0					
+NJAFHF_00040_hypothetical_protein 	A0A249PCH7	DNA polymerase III subunit alpha			1.0				esj:SJ05684_c21770;	
+NJAFHF_00045_hypothetical_protein 	A0A7R8B5Q7	deleted								
+NJAFHF_00050_hypothetical_protein 	A0A6C0F536	Mtd_N domain-containing protein			1.0					PF18454;
+NJAFHF_00055_hypothetical_protein 	A6Q284	Mtd_N domain-containing protein			1.0				nis:NIS_0479;	PF18454;PF05593;
+NJAFHF_00060_hypothetical_protein 	A0A1Q6RQQ8	Tail fiber protein			1.0					
+NJAFHF_00065_hypothetical_protein 	A0A1Z9TIZ1	Por_Secre_tail domain-containing protein			1.0					
+NJAFHF_00070_hypothetical_protein 	A0A2K9NX73	XRE family transcriptional regulator			1.0		DNA binding [GO:0003677]	GO:0003677	bsto:C0V70_14925;	PF01381;
+NJAFHF_00095_hypothetical_protein 	A0A354D9P2	DUF4065 domain-containing protein			1.0					
+NJAFHF_00105_hypothetical_protein 	A0A0G0PS64	AP2 domain-containing protein			1.0		DNA binding [GO:0003677]	GO:0003677		
+NJAFHF_00110_hypothetical_protein 	A0A7V2YX48	Terminase_6C domain-containing protein			1.0					
+NJAFHF_00115_hypothetical_protein 	A0A010YT70	Phage terminase, small subunit			1.0		chromosome organization [GO:0051276]	GO:0051276		PF03592;
+NJAFHF_00120_hypothetical_protein 	A0A2D5TT48	Sigma70_r4 domain-containing protein			1.0					
+NJAFHF_00130_hypothetical_protein 	A0A1L8D108	AAA domain-containing protein			1.0		ATP binding [GO:0005524]	GO:0005524		PF01695;
+NJAFHF_00135_hypothetical_protein 	A0A0N1I1X6	Phage protein			1.0					
+NJAFHF_00140_hypothetical_protein 	A0A496U3D4	Site-specific integrase			1.0		DNA binding [GO:0003677]; DNA integration [GO:0015074]; DNA recombination [GO:0006310]	GO:0003677; GO:0006310; GO:0015074		PF14657;PF14659;PF00589;
+NJAFHF_00175_hypothetical_protein 	M5JKT5	F_actin_bund_C domain-containing protein			1.0					
+NJAFHF_00180_hypothetical_protein 	A0A2X2YDD7	Phage recombination protein Bet			1.0					
+NJAFHF_00185_hypothetical_protein 	A0A6M3IX22	DUF3799 domain-containing protein			1.0					PF12684;
+NJAFHF_00205_Putative_membrane_protein__putative_phage_protein 	A0A2E6H9B2	Peptidase			1.0		peptidase activity [GO:0008233]	GO:0008233		PF13539;
+NJAFHF_00210_hypothetical_protein 	A0A4R9JCD9	DUF4376 domain-containing protein			1.0					
+NJAFHF_00215_hypothetical_protein 	A0A847YW28	Fibronectin type-III domain-containing protein			1.0					
+NJAFHF_00220_hypothetical_protein 	A0A2A9FBG5	Minor tail protein			1.0					
+NJAFHF_00225_hypothetical_protein 	J3HYE1	Structural protein			1.0		membrane [GO:0016020]	GO:0016020		
+NJAFHF_00230_hypothetical_protein 	A0A2W1AVR7	Baseplate_J domain-containing protein			1.0					PF04865;
+NJAFHF_00235_hypothetical_protein 	A0A0Q7MU41	Baseplate protein			1.0					PF04965;
+NJAFHF_00245_hypothetical_protein 	A0A5C7QJG1	Baseplate assembly protein			1.0					
+NJAFHF_00250_hypothetical_protein 	A0A7C5J3L2	Phage major capsid protein			1.0					
+NJAFHF_00255_hypothetical_protein 	A0A0F9TAS4	Phage-tail_3 domain-containing protein			1.0					
+NJAFHF_00260_hypothetical_protein 	A0A0F9VES8	LysM domain-containing protein			1.0					
+NJAFHF_00265_hypothetical_protein 	A0A7C5N3V1	Tail tape measure protein			1.0		membrane [GO:0016020]	GO:0016020		
+NJAFHF_00275_hypothetical_protein 	A0A0P0YGL0	Phage protein			1.0				abg:Asbog_01548;	
+NJAFHF_00280_hypothetical_protein 	A0A2W1BAD9	Phage_sheath_1C domain-containing protein			1.0					PF17482;
+NJAFHF_00285_hypothetical_protein 	A0A5C7PW52	Baseplate protein			1.0					
+NJAFHF_00290_hypothetical_protein 	A0A6H1Z9C1	Tail protein			1.0					
+NJAFHF_00300_hypothetical_protein 	A0A0F9SYQ0	Structural protein			1.0					
+NJAFHF_00315_hypothetical_protein 	A0A3A4UCW5	Structural protein			1.0					
+NJAFHF_00320_hypothetical_protein 	A0A117RKQ9	Phage head protein			1.0					

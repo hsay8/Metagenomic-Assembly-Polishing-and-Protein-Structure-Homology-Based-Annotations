@@ -1,0 +1,84 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+OCGHEF_00005_hypothetical_protein 	A0A2P5KA37	Phage portal protein			1.0					PF06381;
+OCGHEF_00010_hypothetical_protein 	A0A1R3VVA2	deleted								
+OCGHEF_00015_hypothetical_protein 	A0A084EYY6	Translation initiation factor IF-2			1.0		translation initiation factor activity [GO:0003743]; intein-mediated protein splicing [GO:0016539]	GO:0003743; GO:0016539		PF04233;
+OCGHEF_00030_hypothetical_protein 	A0A1R3VWX6	deleted								
+OCGHEF_00035_hypothetical_protein 	A0A2P5KA24	Structural protein			1.0					
+OCGHEF_00040_hypothetical_protein 	A0A2P5KA32	DUF2184 domain-containing protein			1.0					PF09950;
+OCGHEF_00045_hypothetical_protein 	A0A858BBW8	Structural protein			1.0				rhey:FEE42_01780;	
+OCGHEF_00050_hypothetical_protein 	A0A2P5KA70	Uncharacterized protein DUF4054			1.0					PF13262;
+OCGHEF_00060_hypothetical_protein 	E5APC6	TonB-dependent receptor			1.0				brh:RBRH_01204;	
+OCGHEF_00065_hypothetical_protein 	A0A5V6PSK2	Structural protein			1.0					
+OCGHEF_00070_hypothetical_protein 	A0A1R3VZC3	deleted								
+OCGHEF_00075_hypothetical_protein 	A0A1R3VV45	deleted								
+OCGHEF_00080_Gp15_E 	A0A2P5KA68	GNAT family N-acetyltransferase			1.0					
+OCGHEF_00085_hypothetical_protein 	A0A8A9F0K0	deleted								
+OCGHEF_00090_hypothetical_protein 	A0A2P5KA36	Phage protein U			1.0					
+OCGHEF_00095_hypothetical_protein 	A0A2V1K495	Bacteriophage protein			1.0					
+OCGHEF_00100_hypothetical_protein 	E5APD5	AsmA_2 domain-containing protein			1.0				brh:RBRH_01196;	
+OCGHEF_00105_hypothetical_protein 	A0A1U7GLQ4	Gp138_N domain-containing protein			1.0					PF18352;
+OCGHEF_00110_hypothetical_protein 	A0A258BAX3	Phage protein			1.0					
+OCGHEF_00115_Baseplate-J_domain-containing_protein 	A0A2P5KA55	Putative phage protein gp47/JayE			1.0					PF04865;
+OCGHEF_00120_Gp07 	E5APD9	DUF2612 domain-containing protein			1.0				brh:RBRH_01192;	PF11041;
+OCGHEF_00125_hypothetical_protein 	A0A5W3RH62	Tail fiber protein			1.0					
+OCGHEF_00140_hypothetical_protein 	A0A2T5JS86	BACON domain-containing protein			1.0					
+OCGHEF_00145_hypothetical_protein 	A0A2N4TY42	PQQ_3 domain-containing protein			1.0					
+OCGHEF_00155_hypothetical_protein 	A0A846UB81	deleted								
+OCGHEF_00170_TIGR02594_family_protein 	A0A431I067	TIGR02594 family protein			1.0					PF05257;
+OCGHEF_00175_hypothetical_protein 	A0A0C3RMD3	YidC_periplas domain-containing protein			1.0					
+OCGHEF_00210_hypothetical_protein 	A0A2E5ES27	DNA-directed DNA polymerase			1.0		DNA-directed DNA polymerase activity [GO:0003887]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0003887		
+OCGHEF_00220_hypothetical_protein 	X0SFA0	DUF946 domain-containing protein			1.0					
+OCGHEF_00225_hypothetical_protein 	A0A7G2RX26	DUF2800 domain-containing protein			1.0					PF10926;
+OCGHEF_00230_hypothetical_protein 	A0A5C4NXW0	UBA domain-containing protein			1.0					
+OCGHEF_00240_Putative_helicase 	A0A519JNA5	DEAD/DEAH box helicase			1.0		ATP binding [GO:0005524]; DNA binding [GO:0003677]; helicase activity [GO:0004386]; hydrolase activity [GO:0016787]	GO:0003677; GO:0004386; GO:0005524; GO:0016787		PF00271;PF04851;
+OCGHEF_00245_Methyltransferase 	A0A009KMB3	Methyltransferase (EC 2.1.1.-)			2.0	N(4)/N(6)-methyltransferase family, N(4) subfamily	DNA binding [GO:0003677]; N-methyltransferase activity [GO:0008170]; site-specific DNA-methyltransferase (cytosine-N4-specific) activity [GO:0015667]	GO:0003677; GO:0008170; GO:0015667		PF01555;
+OCGHEF_00250_hypothetical_protein 	A0A7G2RWP7	VRR-NUC domain-containing protein			1.0					
+OCGHEF_00255_DUF5906_domain-containing_protein 	A0A257ZV20	DUF5906 domain-containing protein			1.0					PF19263;
+OCGHEF_00275_Adenine_methyltransferase 	A0A7J4ZR29	Adenine methyltransferase			1.0		DNA binding [GO:0003677]; site-specific DNA-methyltransferase (adenine-specific) activity [GO:0009007]	GO:0003677; GO:0009007		PF05869;
+OCGHEF_00280_hypothetical_protein 	A0A1F9JHJ1	Uncharacterized protein			1.0					
+OCGHEF_00305_hypothetical_protein 	A0A1D8A530	Terminase			1.0		chromosome organization [GO:0051276]	GO:0051276	nre:BES08_10950;	PF03592;
+OCGHEF_00310_Bacteriophage_TerL_protein 	A0A0T9T329	TerL protein			1.0					
+OCGHEF_00315_hypothetical_protein 	A0A225DTU1	Phage-related protein			1.0					PF06381;
+OCGHEF_00320_hypothetical_protein 	E5APB7	Phage portal protein			1.0				brh:RBRH_01212;	PF06381;
+OCGHEF_00325_hypothetical_protein 	A0A084EYY6	Translation initiation factor IF-2			1.0		translation initiation factor activity [GO:0003743]; intein-mediated protein splicing [GO:0016539]	GO:0003743; GO:0016539		PF04233;
+OCGHEF_00340_hypothetical_protein 	A0A1R3VWX6	deleted								
+OCGHEF_00345_hypothetical_protein 	A0A2P5KA24	Structural protein			1.0					
+OCGHEF_00350_hypothetical_protein 	A0A2P5KA32	DUF2184 domain-containing protein			1.0					PF09950;
+OCGHEF_00355_hypothetical_protein 	A0A858BBW8	Structural protein			1.0				rhey:FEE42_01780;	
+OCGHEF_00360_hypothetical_protein 	A0A2P5KA70	Uncharacterized protein DUF4054			1.0					PF13262;
+OCGHEF_00365_hypothetical_protein 	A0A1R3VV64	deleted								
+OCGHEF_00370_hypothetical_protein 	E5APC6	TonB-dependent receptor			1.0				brh:RBRH_01204;	
+OCGHEF_00375_hypothetical_protein 	A0A5V6PSK2	Structural protein			1.0					
+OCGHEF_00380_hypothetical_protein 	A0A1R3VZC3	deleted								
+OCGHEF_00385_hypothetical_protein 	A0A1R3VV45	deleted								
+OCGHEF_00390_hypothetical_protein 	A0A2P5GVE1	Nfu_N domain-containing protein			1.0					
+OCGHEF_00395_hypothetical_protein 	A0A8A9F0K0	deleted								
+OCGHEF_00400_hypothetical_protein 	A0A2P5KA36	Phage protein U			1.0					
+OCGHEF_00405_hypothetical_protein 	A0A2V1K495	Bacteriophage protein			1.0					
+OCGHEF_00410_hypothetical_protein 	E5APD5	AsmA_2 domain-containing protein			1.0				brh:RBRH_01196;	
+OCGHEF_00415_hypothetical_protein 	A0A225E087	Phage-related protein			1.0					PF18352;
+OCGHEF_00420_hypothetical_protein 	A0A1U7GLQ4	Gp138_N domain-containing protein			1.0					PF18352;
+OCGHEF_00425_hypothetical_protein 	A0A258BAX3	Phage protein			1.0					
+OCGHEF_00430_Baseplate-J_domain-containing_protein 	A0A2P5KA55	Putative phage protein gp47/JayE			1.0					PF04865;
+OCGHEF_00435_Gp07 	E5APD9	DUF2612 domain-containing protein			1.0				brh:RBRH_01192;	PF11041;
+OCGHEF_00440_hypothetical_protein 	A0A5W3RH62	Tail fiber protein			1.0					
+OCGHEF_00455_hypothetical_protein 	A0A2T5JS86	BACON domain-containing protein			1.0					
+OCGHEF_00460_hypothetical_protein 	A0A2N4TY42	PQQ_3 domain-containing protein			1.0					
+OCGHEF_00470_hypothetical_protein 	A0A846UB81	deleted								
+OCGHEF_00485_TIGR02594_family_protein 	A0A431I067	TIGR02594 family protein			1.0					PF05257;
+OCGHEF_00490_hypothetical_protein 	A0A0C3RMD3	YidC_periplas domain-containing protein			1.0					
+OCGHEF_00525_hypothetical_protein 	A0A2E5ES27	DNA-directed DNA polymerase			1.0		DNA-directed DNA polymerase activity [GO:0003887]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0003887		
+OCGHEF_00530_hypothetical_protein 	A0A1X7MFP9	[similarity to] phage DNA polymerase			1.0					
+OCGHEF_00540_hypothetical_protein 	X0SFA0	DUF946 domain-containing protein			1.0					
+OCGHEF_00545_hypothetical_protein 	A0A7G2RX26	DUF2800 domain-containing protein			1.0					PF10926;
+OCGHEF_00550_hypothetical_protein 	A0A5C4NXW0	UBA domain-containing protein			1.0					
+OCGHEF_00560_Putative_helicase 	A0A519JNA5	DEAD/DEAH box helicase			1.0		ATP binding [GO:0005524]; DNA binding [GO:0003677]; helicase activity [GO:0004386]; hydrolase activity [GO:0016787]	GO:0003677; GO:0004386; GO:0005524; GO:0016787		PF00271;PF04851;
+OCGHEF_00565_Methyltransferase 	A0A009KMB3	Methyltransferase (EC 2.1.1.-)			2.0	N(4)/N(6)-methyltransferase family, N(4) subfamily	DNA binding [GO:0003677]; N-methyltransferase activity [GO:0008170]; site-specific DNA-methyltransferase (cytosine-N4-specific) activity [GO:0015667]	GO:0003677; GO:0008170; GO:0015667		PF01555;
+OCGHEF_00570_hypothetical_protein 	A0A7G2RWP7	VRR-NUC domain-containing protein			1.0					
+OCGHEF_00575_hypothetical_protein 	A0A509MNV7	deleted								
+OCGHEF_00580_hypothetical_protein 	A0A424LXJ9	DUF5906 domain-containing protein			1.0					PF19263;
+OCGHEF_00600_hypothetical_protein 	A0A2V5JTV4	Adenine methyltransferase			1.0		DNA binding [GO:0003677]; site-specific DNA-methyltransferase (adenine-specific) activity [GO:0009007]	GO:0003677; GO:0009007		PF05869;
+OCGHEF_00605_hypothetical_protein 	A0A7J4ZR29	Adenine methyltransferase			1.0		DNA binding [GO:0003677]; site-specific DNA-methyltransferase (adenine-specific) activity [GO:0009007]	GO:0003677; GO:0009007		PF05869;
+OCGHEF_00610_hypothetical_protein 	A0A1F9JHJ1	Uncharacterized protein			1.0					
+OCGHEF_00645_hypothetical_protein 	A0A376KUH2	Putative phage gp33 TerL			1.0					
+OCGHEF_00650_hypothetical_protein 	A0A376KSK7	Putative phage gp33 TerL			1.0					

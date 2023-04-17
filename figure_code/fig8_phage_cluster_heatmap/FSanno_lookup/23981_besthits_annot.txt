@@ -1,0 +1,27 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+PMBBPG_00040_hypothetical_protein 	A0A398BSJ6	DUF5709 domain-containing protein			1.0					
+PMBBPG_00055_Single-stranded_DNA-binding_protein 	D5CTA8	Single-stranded DNA-binding protein (SSB)			1.0		single-stranded DNA binding [GO:0003697]; DNA replication [GO:0006260]	GO:0003697; GO:0006260	slt:Slit_1965;	PF00436;
+PMBBPG_00065_hypothetical_protein 	A0A7V8JSF7	YqaJ domain-containing protein			1.0					PF09588;
+PMBBPG_00070_hypothetical_protein 	A0A7V8FSS9	Phage recombination protein Bet			1.0		DNA binding [GO:0003677]; DNA metabolic process [GO:0006259]	GO:0003677; GO:0006259		PF03837;
+PMBBPG_00075_phage_recombination_protein_Bet 	A0A1E7YQ87	Phage recombination protein Bet			1.0		DNA binding [GO:0003677]; DNA recombination [GO:0006310]	GO:0003677; GO:0006310		PF03837;
+PMBBPG_00090_hypothetical_protein 	A0A364NVS2	Phage_rep_org_N domain-containing protein			1.0					
+PMBBPG_00095_hypothetical_protein 	A0A7X0PDL4	DUF6475 domain-containing protein			1.0					PF20081;
+PMBBPG_00105_hypothetical_protein 	A0A4Q5ITR8	Terminase small subunit			1.0					
+PMBBPG_00110_Terminase-6C_domain-containing_protein 	Q2G3Y4	Phage uncharacterized protein-like protein			1.0				nar:Saro_3004;	PF17289;
+PMBBPG_00115_hypothetical_protein 	A0A0S8L0U8	Phage P22-like portal protein			1.0					PF16510;
+PMBBPG_00120_hypothetical_protein 	A0A7W6Q8R8	Lysophospholipase L1-like esterase			1.0		hydrolase activity, acting on ester bonds [GO:0016788]	GO:0016788		PF13472;
+PMBBPG_00125_hypothetical_protein 	D7Y7W0	Scaffolding protein			1.0					
+PMBBPG_00130_Coat_protein 	A0A833PDG3	Coat protein			1.0					PF11651;
+PMBBPG_00145_hypothetical_protein 	A0A7U3G9P3	deleted								
+PMBBPG_00150_Bacteriophage_P22__Gp10__DNA-stabilising 	A0A285IC78	Phage stabilisation protein			1.0					PF11134;
+PMBBPG_00155_hypothetical_protein 	A0A7U3G9P3	deleted								
+PMBBPG_00165_hypothetical_protein 	A0A009QGL7	DNA transfer protein p32			1.0					
+PMBBPG_00175_hypothetical_protein 	A0A334NSL2	deleted								
+PMBBPG_00185_hypothetical_protein 	A0A0Q6MSX3	Tail tape measure protein			1.0					
+PMBBPG_00190_hypothetical_protein 	A0A7U4R125	deleted								
+PMBBPG_00195_hypothetical_protein 	A0A5E4X5X5	DUF3618 domain-containing protein			1.0		membrane [GO:0016020]	GO:0016020		
+PMBBPG_00200_hypothetical_protein 	A0A6M3KJB1	Holin			1.0		membrane [GO:0016020]	GO:0016020		
+PMBBPG_00205_Lysozyme 	A0A6N6L8L1	Lysozyme (EC 3.2.1.17)			2.0	Glycosyl hydrolase 24 family	host cell cytoplasm [GO:0030430]; lysozyme activity [GO:0003796]; cell wall macromolecule catabolic process [GO:0016998]; cytolysis [GO:0019835]; defense response to bacterium [GO:0042742]; peptidoglycan catabolic process [GO:0009253]	GO:0003796; GO:0009253; GO:0016998; GO:0019835; GO:0030430; GO:0042742		PF00959;
+PMBBPG_00210_hypothetical_protein 	A0A196QKI5	NosD domain-containing protein			1.0		isomerase activity [GO:0016853]; alginic acid biosynthetic process [GO:0042121]	GO:0016853; GO:0042121		PF05048;
+PMBBPG_00215_hypothetical_protein 	A0A1G3M739	VRR-NUC domain-containing protein			1.0		nuclease activity [GO:0004518]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0004518		PF08774;
+PMBBPG_00235_Putative_bacteriophage_protein 	A0A0L0QKP2	Adenine methyltransferase			1.0		DNA binding [GO:0003677]; site-specific DNA-methyltransferase (adenine-specific) activity [GO:0009007]	GO:0003677; GO:0009007		PF05869;

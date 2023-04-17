@@ -1,0 +1,389 @@
+# -------------------------------------------------------------------------------------
+# ASSEMBLY FILTERING AND POLISHING
+# -------------------------------------------------------------------------------------
+wildcard_constraints:
+    contig_number="\d+"
+
+SAMPLES = glob_wildcards("{sample}/3-assemblyhq/circularized_assemblies/contig_{contig_number}").sample
+CNUMBERS = glob_wildcards("{sample}/3-assemblyhq/circularized_assemblies/contig_{contig_number}").contig_number
+print('Contigs found:', CNUMBERS)
+
+rule complete_polishing:
+    input:
+        expand("{sample}/7-medaka/{contig_number}", contig_number = CNUMBERS, sample = SAMPLES)
+
+#get read alignments (minimap 2.24)
+rule minimap2_align_unfiltered_unpolished:
+    input:
+        target= "{sample}/3-assemblyhq/circularized_assemblies/contig_{contig_number}",
+        query= "{sample}/2-nanofilt/basecalled_filtered.fastq"
+    output:
+        temporary("{sample}/4-minimap/{contig_number}_unfilt_reads_1.sam")
+    group: "polishing"
+    params:
+        extra="-ax map-ont",           # optional
+        sorting="none",                 # optional: Enable sorting. Possible values: 'none', 'queryname' or 'coordinate'
+        sort_extra=""                # optional: extra arguments for samtools/picard
+    threads: 8
+    message:
+        "Mapping total metagenomic reads against contig {wildcards.contig_number} with minimap2 (--options: -ax map-ont)..."
+    log:
+        "{sample}/logs/minimap2/{contig_number}_unfilt_reads.log"
+    wrapper:
+        "v1.9.0/bio/minimap2/aligner"
+
+rule check_duplicate_header_1:
+    input:
+        rules.minimap2_align_unfiltered_unpolished.output
+    output:
+        temporary("{sample}/4-minimap/{contig_number}_unfilt_reads_1a.sam")
+    group: "polishing"
+    shell:
+        """
+        A=$(sed -e 's/[^[:blank:][:print:]\t]//g' -e '1q;d' {input})
+        B=$(sed -e 's/[^[:blank:][:print:]\t]//g' -e '2q;d' {input})
+        echo $A
+        echo $B
+        if [ "$A" == "$B" ]; then sed -i 1d {input}; echo "Duplicate header detected! Removing now..."; else echo "No duplicate header; if the two printed lines are the same, something went wrong"; fi
+        mv {input} {output}
+        """
+
+rule gerenuq_filter_read_map:
+    input:
+        rules.check_duplicate_header_1.output
+    output:
+        temporary("{sample}/5-gerenuq/{contig_number}.sam")
+    group: "polishing"
+    conda:
+        "envs/gerenuq.yml"
+    log:
+        "{sample}/logs/gerenuq/{contig_number}.log"
+    message:
+        "Filtering mapped reads, keeping alignments > 90 percent sequence identity, length > 1000, matches:length score > 1, length:score > 2 )"
+    shell:
+        """
+        gerenuq -t 8 -m 0.9 -i {input} -o {output}
+        """
+
+rule samtools_gerenuq_out_to_fasta:
+    input:
+        rules.gerenuq_filter_read_map.output
+    output:
+        temporary("{sample}/5-gerenuq/{contig_number}.fasta")
+    group: "polishing"
+    message:
+        "Getting aligned reads in fasta format (needed for polishing)..."
+    log:
+        "{sample}/5-gerenuq/{contig_number}.fasta"
+    threads: 4
+    params:
+        outputtype="fasta"
+    wrapper:
+        "v1.12.2/bio/samtools/fastx/"
+
+rule get_contig_gfa:
+    input:
+        "{sample}/3-assemblyhq/assembly_graph.gfa"
+    output:
+        temporary("{sample}/6-minipolish/{contig_number}.gfa")
+    group: "polishing"
+    message:
+        "Extracting contig {wildcards.contig_number} gfa and making necessary format changes for minipolish... (Inlcuding reformatting from 1.0- > 2.0 GFA)"
+    log:
+        "{sample}/logs/gfatools/{contig_number}.log"
+    shell:
+        """
+        ./workflow/tools/gfatools/gfatools view -l edge_{wildcards.contig_number} -r 1 {input} > {output}
+        """
+rule gfa_v1_to_v2:
+    input:
+        rules.get_contig_gfa.output
+    output:
+        temporary("{sample}/6-minipolish/{contig_number}_2.gfa")
+    group: "polishing"
+    message:
+        "Using gfak to convert {wildcards.contig_number} GFA format from v1.0- > v2.0"
+    log:
+        "{sample}/logs/gfak/{contig_number}.log"
+    shell:
+        """
+        gfak convert -S 2.0 {input} > {output}
+        """
+
+rule flyetominiasm:
+    input:
+        rules.gfa_v1_to_v2.output
+    output:
+        temporary("{sample}/6-minipolish/{contig_number}_asm.gfa")
+    group: "polishing"
+    message:
+        "Adding l to deflines to mimick miniasm format (needed for minipolish to run)"
+    log:
+        "{sample}/logs/scripts/{contig_number}_flyetominiasm.log"
+    script:
+        "tools/flyetominiasm_snakemake.py"
+
+#polishing in two steps
+
+rule minipolish:
+    input:
+        #filtered reads
+        rules.samtools_gerenuq_out_to_fasta.output,
+        #contig to polish in gfa format
+        rules.flyetominiasm.output
+    output:
+        temporary("{sample}/6-minipolish/{contig_number}_polished.gfa")
+    group: "polishing"
+    conda:
+        "envs/minipolish.yml"
+    message:
+        "First round of polishing contig {wildcards.contig_number} with minipolish..."
+    log:
+        "{sample}/logs/minipolish/{contig_number}.log"
+    shell:
+    #minipolish then convert output (gfa) to fasta (format needed for medaka)
+        """
+        minipolish --skip_initial {input} > {output}
+        """
+
+rule minipol_gfa_to_fasta:
+    input:
+        rules.minipolish.output
+    output:
+        temporary("{sample}/6-minipolish/{contig_number}_polished.fasta")
+    group: "polishing"
+    shell:
+        """
+        awk '/^S/{{print ">"$2"\\n"$3}}' {input} | fold > {output}
+        """
+
+rule medaka:
+    input:
+        reads = rules.samtools_gerenuq_out_to_fasta.output,
+        assembly = rules.minipol_gfa_to_fasta.output
+    output:
+        directory("{sample}/7-medaka/{contig_number}/")
+    group: "polishing"
+    conda:
+        "envs/medaka.yml"
+    message:
+        "Second round of polishing contig {wildcards.contig_number} with medaka"
+    log:
+        "{sample}/logs/medaka/{contig_number}.log"
+    shell:
+        "medaka_consensus -i {input.reads} -d {input.assembly} -o {output}"
+
+# -------------------------------------------------------------------------------------
+# CALCULATE COVERAGE
+# -------------------------------------------------------------------------------------
+FNUMBERS = glob_wildcards("{sample}/7-medaka/{final_numbers,[^/]+}/").final_numbers
+print('remaining contigs after polishing:', FNUMBERS)
+
+rule calculate_coverage:
+    input:
+        expand("{sample}/mosdepth/{final_numbers}_filt.mosdepth.global.dist.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_filt.per-base.bed.gz", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_filt.mosdepth.summary.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_filt.regions.bed.gz", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_filt.mosdepth.region.dist.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.global.dist.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_unfilt.per-base.bed.gz", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.summary.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_unfilt.regions.bed.gz", final_numbers = FNUMBERS, sample=SAMPLES),
+        expand("{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.region.dist.txt", final_numbers = FNUMBERS, sample=SAMPLES),
+
+rule rename_consensus:
+    input:
+        "{sample}/7-medaka/{final_numbers}/consensus.fasta"
+    output:
+        "{sample}/final_assemblies/{final_numbers}.fasta"
+    shell:
+        "cp {input} {output}"
+
+rule minimap2_align_unfiltered_unpolished_2:
+    priority:2
+    input:
+        target= "{sample}/3-assemblyhq/circularized_assemblies/contig_{final_numbers}",
+        query= ["{sample}/2-nanofilt/basecalled_filtered.fastq"],
+    output:
+        temporary("{sample}/4-minimap/{final_numbers}_unfilt_reads_2.sam")
+    params:
+        extra="-ax map-ont",           # optional
+        sorting="none",                 # optional: Enable sorting. Possible values: 'none', 'queryname' or 'coordinate'
+        sort_extra=""                # optional: extra arguments for samtools/picard
+    threads: 8
+    message:
+        "Mapping total metagenomic reads against contig {wildcards.final_numbers} with minimap2 (--options: -ax map-ont)..."
+    log:
+        "{sample}/logs/minimap2/{final_numbers}_unfilt_reads_2.log"
+    wrapper:
+        "v1.9.0/bio/minimap2/aligner"
+
+#get coverage after polishing and filtering by aligning polished genomes with filtered reads
+rule minimap2_align_filtered_polished:
+    priority:2
+    input:
+        target=rules.rename_consensus.output,
+        query=["{sample}/5-gerenuq/{final_numbers}.fasta"],
+    output:
+        temporary("{sample}/4-minimap/{final_numbers}_filt_reads_2.sam")
+    log:
+        "{sample}/logs/minimap2/{final_numbers}_filt_reads.log"
+    conda:
+        "envs/assembly.yml"
+    params:
+        extra="-ax map-ont",           # optional
+        sorting="none",                 # optional: Enable sorting. Possible values: 'none', 'queryname' or 'coordinate'
+        sort_extra=""                # optional: extra arguments for samtools/picard
+    threads: 8
+    message:
+        "Calculating coverage of polished {wildcards.final_numbers} assembly with filtered reads"
+    wrapper:
+        "v1.3.2/bio/minimap2/aligner"
+
+rule check_duplicate_header_2_unfilt:
+    priority:1
+    input:
+        rules.minimap2_align_unfiltered_unpolished_2.output
+    output:
+        temporary("{sample}/4-minimap/{final_numbers}_unfilt_reads_2a.sam")
+    shell:
+        """
+        A=$(sed '1q;d' {input})
+        B=$(sed '2q;d' {input})
+        echo $A
+        echo $B
+        if [ $"A" == $"B" ]; then sed -i 1d {input}; else echo "No duplicate header"; fi
+        mv {input} {output}
+        """
+
+rule check_duplicate_header_2_filt:
+    priority:1
+    input:
+        rules.minimap2_align_filtered_polished.output
+    output:
+        temporary("{sample}/4-minimap/{final_numbers}_filt_reads_2a.sam")
+    shell:
+        """
+        A=$(sed '1q;d' {input})
+        B=$(sed '2q;d' {input})
+        echo $A
+        echo $B
+        if [ $"A" == $"B" ]; then sed -i 1d {input}; else echo "No duplicate header"; fi
+        mv {input} {output}
+        """
+
+rule samtools_view_filt:
+    input:
+        rules.check_duplicate_header_2_filt.output
+    output:
+        bam=temporary("{sample}/polished_depth/{final_numbers}_filt_reads.bam"),
+    log:
+        "{sample}/logs/samtools/{final_numbers}_view_filt.log",
+    params:
+        extra="",  # optional params string
+    threads: 2
+    wrapper:
+        "v1.9.0/bio/samtools/view"
+
+rule samtools_sort_filt:
+    input:
+        rules.samtools_view_filt.output
+    output:
+        "{sample}/polished_depth/{final_numbers}_filt_sort.bam",
+    log:
+        "{sample}/logs/samtools/{final_numbers}_sort_filt.log",
+    params:
+        extra="-m 4G",
+    threads: 8
+    wrapper:
+        "v1.9.0/bio/samtools/sort"
+
+rule samtools_index_filt:
+    input:
+        rules.samtools_sort_filt.output
+    output:
+        "{sample}/polished_depth/{final_numbers}_filt_sort.bam.bai"
+    log:
+        "{sample}/logs/samtools_index/{final_numbers}_index_filt.log",
+    params:
+        extra="",  # optional params string
+    threads: 4  # This value - 1 will be sent to -@
+    wrapper:
+        "v1.9.0/bio/samtools/index"
+
+rule samtools_view_unfilt:
+    input:
+        rules.check_duplicate_header_2_unfilt.output
+    output:
+        bam=temporary("{sample}/4-minimap/{final_numbers}_unfilt_reads.bam"),
+    log:
+        "{sample}/logs/samtools/{final_numbers}_view.log",
+    params:
+        extra="",  # optional params string
+    threads: 2
+    wrapper:
+        "v1.9.0/bio/samtools/view"
+
+rule samtools_sort_unfilt:
+    input:
+        rules.samtools_view_unfilt.output
+    output:
+        "{sample}/4-minimap/{final_numbers}_unfilt_sort.bam",
+    log:
+        "{sample}/logs/samtools/{final_numbers}_unfilt_sort.log",
+    params:
+        extra="-m 4G",
+    threads: 8
+    wrapper:
+        "v1.9.0/bio/samtools/sort"
+
+rule samtools_index_unfilt:
+    input:
+        rules.samtools_sort_unfilt.output
+    output:
+        "{sample}/4-minimap/{final_numbers}_unfilt_sort.bam.bai"
+    log:
+        "{sample}/logs/samtools_index/{final_numbers}_index.log",
+    params:
+        extra="",  # optional params string
+    threads: 4  # This value - 1 will be sent to -@
+    wrapper:
+        "v1.9.0/bio/samtools/index"
+
+#get coverage for filtered+polished and unfiltered+unpolished for comparison
+rule mosdepth_filt:
+    input:
+        bam=rules.samtools_sort_filt.output,
+        bai=rules.samtools_index_filt.output
+    output:
+        "{sample}/mosdepth/{final_numbers}_filt.mosdepth.global.dist.txt",
+        "{sample}/mosdepth/{final_numbers}_filt.per-base.bed.gz",  # produced unless --no-per-base specified
+        "{sample}/mosdepth/{final_numbers}_filt.regions.bed.gz",  # this named output is required for prefix parsing
+        "{sample}/mosdepth/{final_numbers}_filt.mosdepth.region.dist.txt",  # this named output is required for prefix parsing
+        summary="{sample}/mosdepth/{final_numbers}_filt.mosdepth.summary.txt",  # this named output is required for prefix parsing
+    log:
+        "{sample}/logs/mosdepth/{final_numbers}.log",
+    params:
+        by="1000",
+    threads: 4  # This value - 1 will be sent to `--threads`
+    wrapper:
+        "v1.12.2/bio/mosdepth"
+
+rule mosdepth_unfilt:
+    input:
+        bam=rules.samtools_sort_unfilt.output,
+        bai=rules.samtools_index_unfilt.output
+    output:
+        "{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.global.dist.txt",
+        "{sample}/mosdepth/{final_numbers}_unfilt.per-base.bed.gz",  # produced unless --no-per-base specified
+        "{sample}/mosdepth/{final_numbers}_unfilt.regions.bed.gz",  # this named output is required for prefix parsing
+        "{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.region.dist.txt",  # this named output is required for prefix parsing
+        summary="{sample}/mosdepth/{final_numbers}_unfilt.mosdepth.summary.txt",  # this named output is required for prefix parsing
+    log:
+        "{sample}/logs/mosdepth/{final_numbers}.log",
+    params:
+        by="1000",
+    threads: 4  # This value - 1 will be sent to `--threads`
+    wrapper:
+        "v1.12.2/bio/mosdepth"

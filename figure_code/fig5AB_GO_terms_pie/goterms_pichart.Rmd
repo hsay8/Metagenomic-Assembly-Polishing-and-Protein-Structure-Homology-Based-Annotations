@@ -1,0 +1,111 @@
+---
+title: "GOterm_phages"
+author: "Henry"
+date: "2023-04-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyr)
+go.terms.df <- read.table("./go_terms/goterms_total.txt", sep=";", fill=TRUE)
+go.terms.df <- data.frame(apply(go.terms.df, 2, function(x) ifelse(x == "", NA, x)))
+
+#collapse dataframe into one column of go terms
+go.terms.collapsed <- gather(go.terms.df, na.rm=TRUE)
+
+#remove trailing whitespaces
+go.terms.collapsed$value <- trimws(go.terms.collapsed$value, which = "both", whitespace = "[ \t\r\n]")
+
+#get occurrences of each go term and add to a new column
+freq.tabl <- go.terms.collapsed %>%
+  count(value) %>%
+  left_join(go.terms.collapsed, by = "value")
+
+#sort descending
+freq.tabl.sort <- freq.tabl[order(-freq.tabl$n), ]
+
+#remove duplicated rows
+freq.tabl.uniq <- subset(freq.tabl.sort, !duplicated(freq.tabl.sort$value))
+
+#subsets: top 10
+top.10 <- freq.tabl.uniq[1:10,]
+top.10 <- arrange(top.10, -n)
+# create a vector of unique values in the desired order
+value_order <- unique(top.10$value)
+# convert metabs$value to a factor with levels in the desired order
+top.10$value <- factor(top.10$value, levels = value_order)
+
+#subsets: metabolism GO's
+metabs <- freq.tabl.uniq[grepl("metab", freq.tabl.uniq$value, ignore.case = TRUE),]
+metabs <- arrange(metabs, -n)
+# create a vector of unique values in the desired order
+value_order <- unique(metabs$value)
+# convert metabs$value to a factor with levels in the desired order
+metabs$value <- factor(metabs$value, levels = value_order)
+```
+
+Pie chart
+```{r}
+library(scales)
+library(ggrepel)
+library(ggpubr)
+library(dplyr)
+library(svglite)
+
+#specify layout of labels for pie slices
+label1 <- 
+  top.10 %>% 
+  arrange(desc(value)) %>% ## arrange in the order of the legend
+  mutate(text_y = cumsum(n) - n/2) ### calculate where to place the text labels
+
+#top 10
+ggplot(top.10, aes(x="", y=n, fill=value)) +
+  geom_bar(stat="identity", width=1)+
+  geom_label_repel(data = label1,
+                   aes(y = text_y, label = n),
+                   size = 4.5, nudge_x = 0.7, show.legend = TRUE) +
+  guides(fill = guide_legend(override.aes = list(label = top.10$n)))+
+  coord_polar(theta = "y")+
+  xlab("")+
+  ylab("")+
+  labs(fill = "GO Terms")+
+  theme(panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_blank(),   # remove y-axis labels on the right plot
+        axis.text.x = element_blank(),
+        legend.key.height = unit(0.1, 'cm'),
+        #legend.key.height = unit(0.1, 'cm'),
+        #legend.text = element_text(size=8)
+        )
+
+#specify layout of labels for pie slices
+label2 <- 
+  metabs %>% 
+  arrange(desc(value)) %>% ## arrange in the order of the legend
+  mutate(text_y = cumsum(n) - n/2) ### calculate where to place the text labels
+
+#metab process
+ggplot(metabs, aes(x="", y=n, fill=value, group = value)) +
+  geom_bar(stat="identity", width=1)+
+  geom_label_repel(data = label2,
+                   aes(y = text_y, label = n),
+                   size = 4.5, nudge_x = 0.7, show.legend = TRUE) +
+  guides(fill = guide_legend(override.aes = list(label = metabs$n)))+
+  coord_polar(theta = "y")+
+  xlab("")+
+  ylab("")+
+  labs(fill = "GO Terms (Metabolism)")+
+  theme(panel.background = element_rect(fill = "white"),
+        plot.margin = unit(c(1, 1, 1, 1), "cm"),
+        axis.text.y = element_blank(),   
+        axis.text.x = element_blank(),
+        legend.key.height = unit(0.1, 'cm'),
+        #legend.text = element_text(size=8)
+        )
+```

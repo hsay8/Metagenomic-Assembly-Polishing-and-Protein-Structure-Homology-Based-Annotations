@@ -1,0 +1,25 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+GCOMPG_00015_hypothetical_protein 	A0A0P0DV46	DUF551 domain-containing protein			1.0				smaz:LH19_07260;	
+GCOMPG_00075_hypothetical_protein 	A0A420ERT4	CPBP family intramembrane metalloprotease			1.0		membrane [GO:0016020]	GO:0016020		
+GCOMPG_00080_Muramidase_domain-containing_protein 	A0A0M4CQI5	Muramidase domain-containing protein			1.0				sphp:LH20_04475;	PF11860;
+GCOMPG_00105_hypothetical_protein 	A0A0N0LXA4	Phage tail protein			1.0					
+GCOMPG_00110_hypothetical_protein 	A0A4V3K9R0	DUF2793 domain-containing protein			1.0					PF10983;
+GCOMPG_00125_Peptidase-M15-3_domain-containing_protein 	Q2G3Z4	Peptidase_M15_3 domain-containing protein			1.0				nar:Saro_2994;	PF08291;
+GCOMPG_00130_hypothetical_protein 	A0A4Q3ZZI9	HNH endonuclease			1.0		DNA binding [GO:0003677]; endonuclease activity [GO:0004519]	GO:0003677; GO:0004519		PF13392;
+GCOMPG_00135_hypothetical_protein 	A0A2V5PU26	DNA transfer protein			1.0					
+GCOMPG_00140_hypothetical_protein 	A0A0F9L708	Phage tail protein			1.0					
+GCOMPG_00145_hypothetical_protein 	Q2G3Z1	Packaged DNA stabilization protein gp10			1.0				nar:Saro_2997;	PF11134;
+GCOMPG_00150_hypothetical_protein 	Q2G3Z0	Head-to-tail adaptor			1.0				nar:Saro_2998;	PF11650;
+GCOMPG_00155_hypothetical_protein 	A0A8B4NR14	Putative coat protein			1.0					PF11651;
+GCOMPG_00160_hypothetical_protein 	A0A0F5PBK6	Scaffolding protein			1.0					
+GCOMPG_00165_hypothetical_protein 	N8W2L4	Phage P22-like portal protein			1.0					PF16510;
+GCOMPG_00170_PBSX_family_phage_terminase_large_subunit 	A0A3N5CNE5	PBSX family phage terminase large subunit			1.0					PF04466;PF17288;
+GCOMPG_00175_hypothetical_protein 	A0A5B8LGV5	Terminase small subunit protein			1.0				spai:FPZ24_08215;	
+GCOMPG_00180_hypothetical_protein 	A0A2P0AZW5	Transcriptional regulator			1.0					
+GCOMPG_00200_hypothetical_protein 	A0A2K8KNM0	DUF3987 domain-containing protein			1.0				rfo:REIFOR_01249;	PF13148;
+GCOMPG_00205_Methyltransferase 	A0A562PUD1	Methyltransferase (EC 2.1.1.-)			1.0	N(4)/N(6)-methyltransferase family	DNA binding [GO:0003677]; N-methyltransferase activity [GO:0008170]; DNA methylation [GO:0006306]	GO:0003677; GO:0006306; GO:0008170		PF01555;
+GCOMPG_00210_hypothetical_protein 	A0A257ZMP7	GIY-YIG domain-containing protein			1.0					PF01541;
+GCOMPG_00230_hypothetical_protein 	A0A5J5I0M2	Single-stranded DNA-binding protein (SSB)			2.0		single-stranded DNA binding [GO:0003697]; DNA recombination [GO:0006310]; DNA replication [GO:0006260]	GO:0003697; GO:0006260; GO:0006310		PF00436;
+GCOMPG_00240_hypothetical_protein 	A0A7Y9S7K4	HTH_7 domain-containing protein			1.0					
+GCOMPG_00255_hypothetical_protein 	A0A833JG13	Polymer-forming cytoskeletal protein			1.0					PF18836;
+GCOMPG_00285_hypothetical_protein 	A0A249MVF9	DUF1905 domain-containing protein			1.0				shyd:CJD35_13515;	

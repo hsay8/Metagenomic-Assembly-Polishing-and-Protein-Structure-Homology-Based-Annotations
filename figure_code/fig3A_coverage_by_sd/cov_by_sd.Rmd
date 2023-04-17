@@ -1,0 +1,115 @@
+---
+title: "cov_vs_stddev"
+author: "Henry"
+date: "2023-02-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Initialize data to calculate std dev
+```{r}
+#import files for coverages of each assembly into a list of dataframes
+compl.cov.data <- list.files(path="./coverages_complete_assemblies", pattern=".bed", full.names=TRUE, recursive=FALSE)
+compl.df<- lapply(compl.cov.data, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("name", "start", "end", "mean_cov"), colClasses = c("character", "numeric", "numeric", "numeric"))
+})
+
+compl.cov.list = data.frame(name=as.character(), mean.cov=as.numeric(), std.devs=as.numeric(), conf.min=as.numeric(), conf.max=as.numeric())
+for (x in 1:length(compl.df)){
+  cont.name <- compl.df[[x]][1,1]
+  mean.cov <- mean(compl.df[[x]][,4])
+  std.dev <- sd(compl.df[[x]][,4])
+  row <- list(name=cont.name, mean.cov=mean.cov, std.devs=std.dev)
+  compl.cov.list[nrow(compl.cov.list)+1,] <- row
+}
+
+
+phage.cov.data <- list.files(path="./coverages_phage", pattern=".bed", full.names=TRUE, recursive=FALSE)
+phage.df<- lapply(phage.cov.data, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("name", "start", "end", "mean_cov"), colClasses = c("character", "numeric", "numeric", "numeric"))
+})
+
+phage.cov.list = data.frame(name=as.character(), mean.cov=as.numeric(), std.devs=as.numeric())
+for (x in 1:length(phage.df)){
+  cont.name <- phage.df[[x]][1,1]
+  mean.cov <- mean(phage.df[[x]][,4])
+  std.dev <- sd(phage.df[[x]][,4])
+  row <- list(name=cont.name, mean.cov=mean.cov, std.devs=std.dev)
+  phage.cov.list[nrow(phage.cov.list)+1,] <- row
+}
+
+#Which ratios are greater than 1.0
+compl.cov.list <- compl.cov.list %>% 
+  mutate(ratios = std.devs/mean.cov)
+
+compl.cov.list$high.ratio1 <- ifelse(compl.cov.list$ratios > 1.0, TRUE, FALSE)
+
+phage.cov.list <- phage.cov.list %>% 
+  mutate(ratios = std.devs/mean.cov)
+
+phage.cov.list$high.ratio2 <- ifelse(phage.cov.list$ratios > 1.0, TRUE, FALSE)
+```
+
+
+```{r}
+library(ggplot2)
+
+#log trans
+#cov.by.sd <- 
+ggplot()+
+  #Points for high quality MAGs
+  geom_point(data = compl.cov.list, 
+             aes(x=mean.cov, y=std.devs, shape=high.ratio1, color=ifelse(high.ratio1, "#00195B", "#2262ff")), 
+            size = 2,
+            alpha = 0.7
+               )+
+  stat_ellipse(data = compl.cov.list,
+               geom = "path",
+               aes(x=mean.cov, y=std.devs, fill = "red"),
+               level = 0.95,
+               color = "red",
+               alpha=0.5,
+               size=1.2)+
+  #geom_smooth(method='lm', data = compl.cov.list, aes(x=mean.cov, y=std.devs),formula= y~x, color = "red")+
+  #Points for putative phages
+  geom_point(data = phage.cov.list, 
+             aes(x=mean.cov, y=std.devs, shape=high.ratio2, color=ifelse(high.ratio2, "#620000", "red")), 
+             size = 2,
+             alpha = 0.7
+               )+
+  stat_ellipse(data = phage.cov.list,
+               geom = "path",
+               aes(x=mean.cov, y=std.devs, fill = "#2262ff"),
+               level = 0.95,
+               color = "#2262ff",
+               alpha=0.5,
+               size=1.2)+
+    scale_color_manual(values = c("#620000", "red", "#00195B", "#2262ff")) +
+  #geom_smooth(method='lm', data = phage.cov.list, aes(x=mean.cov, y=std.devs),formula= y~x)+
+  geom_abline(slope = 0, intercept = log10(50), alpha = 0.25)+
+  geom_abline(slope = 1, intercept = 0, alpha = 0.25)+
+  scale_x_continuous(
+    limits = c(1, 2000),
+    expand = c(0, 0),
+    trans='log10',
+  ) +
+  scale_y_continuous(expand = c(0,0),
+                     trans='log10',
+                    limits = c(1, 2000),
+                    breaks = c(1,10,50,100,1000)
+                     ) +
+  labs(
+    x = "Mean Coverage",
+    y = "Standard Deviation"
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "#3A3A3A"),
+    legend.position = "none",
+    axis.title = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 10),
+    )
+```

@@ -1,0 +1,481 @@
+---
+title: "kegg_pathview"
+author: "Henry"
+date: "2023-01-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Initialize data
+```{r}
+library(stringr)
+library(tidyverse)
+library(dplyr)
+library(KEGGREST)
+
+# get list of files
+fs.files <- list.files(path = "./KEGG", pattern = "foldseek_KOs.txt", full.names = TRUE, recursive = FALSE)
+bk.files <- list.files(path = "./KEGG", pattern = "bakta_KO.txt", full.names = TRUE, recursive = FALSE)
+
+
+# read table on list of files
+fs.df.list <- lapply(fs.files, function(x) {
+  a <- read.table(x, sep = "\t", col.names = c("gene_ID", "KO"), colClasses = c("character", "character"))
+})
+
+bk.df.list <- lapply(bk.files, function(x) {
+  a <- read.table(x, col.names = c("KO"), colClasses = c("character"))
+})
+
+# rename df's to corresponding file names
+names(fs.df.list) <- gsub("_all_phages_foldseek_KOs", "", tools::file_path_sans_ext(list.files(path = "./KEGG", pattern = "foldseek_KOs.txt", full.names = FALSE, recursive = FALSE)))
+
+names(bk.df.list) <- gsub("_all_phages_foldseek_KOs", "", tools::file_path_sans_ext(list.files(path = "./KEGG", pattern = "bakta_KO.txt", full.names = FALSE, recursive = FALSE)))
+
+# query across all samples
+
+# combine list of dataframes
+bk.all.ko <- bind_rows(bk.df.list, .id = 'id')
+fs.all.ko <- bind_rows(fs.df.list, .id = 'id')
+
+# add ko: prefix to bakta entries
+bk.all.ko$KO <- paste("ko", bk.all.ko$KO, sep = ":")
+
+#Create not in function
+`%!in%` <- Negate(`%in%`)
+```
+
+Get all pathways from annotations
+```{r}
+library(KEGGREST)
+
+bk.path.info <- data.frame(SAMPLE = character(), QUERY_KO = character(), PATHWAY = character(), PATHWAY_NAME = character(), CLASS = character())
+
+# Get BK PATHWAY info - note keggGet has a limit of 10 inputs, so I'll use afor loop. Each loop will append the info to a new DF.
+for (n in seq_len(nrow(bk.all.ko))) {
+  # query KO's in KEGG DB
+  bk.query <- keggGet(bk.all.ko[n, 2])
+  bk.ko <- bk.query[[1]]["ENTRY"][[1]]
+  # check if there's a pathway attached
+  if ("PATHWAY" %in% names(bk.query[[1]][])) {
+    # some ko's might have multiple pathways, so we will go through each pathway and query for its map, name, class. Each pathway will have this info in its own vector, which will go into a list. The list of vectors will be appended to the bk.info dataframe.
+    for (m in names(bk.query[[1]]["PATHWAY"][[1]])) {
+      # get the pathway KO
+      bk.p.ko <- gsub(".*_", "", m)
+      # gets the name of the functional pathway
+      bk.p.name <- as.character(bk.query[[1]]["PATHWAY"][[1]][m])
+      # get higher level class
+      bk.p.class <- keggGet(bk.p.ko)
+      bk.p.class <- as.character(bk.p.class[[1]]["CLASS"])
+      p.inf <- data.frame(
+        SAMPLE = bk.all.ko[n, 1],
+        QUERY_KO = bk.ko,
+        PATHWAY = bk.p.ko,
+        PATHWAY_NAME = bk.p.name,
+        CLASS = bk.p.class
+      )
+    }
+  } else {
+    bk.p.ko <- "No Attributed Pathway"
+    bk.p.name <- "No Attributed Pathway"
+    bk.p.class <- "No Attributed Class"
+    p.inf <- data.frame(
+      SAMPLE = bk.all.ko[n, 1],
+      QUERY_KO = bk.ko,
+      PATHWAY = bk.p.ko,
+      PATHWAY_NAME = bk.p.name,
+      CLASS = bk.p.class
+    )
+  }
+      bk.path.info <- rbind(bk.path.info, p.inf)
+
+}
+
+# get full list of KO's for each PATHWAY that appears in our annotations
+bk.path.all.ko <- data.frame(PATH = character(), KO = character())
+for (i in bk.path.info$PATHWAY) {
+  if (i == "No Attributed Pathway") {
+    return
+  } else {
+    anno.ko.full <- data.frame(PATH = names(keggLink("ko", i)), KO = keggLink("ko", i))
+    bk.path.all.ko <- rbind(bk.path.all.ko, anno.ko.full)
+  }
+}
+
+#--------------------------------------
+fs.path.info <- data.frame(SAMPLE = character(), QUERY_KO = character(), PATHWAY = character(), PATHWAY_NAME = character(), CLASS = character())
+
+# Get FS PATHWAY info - note keggGet has a limit of 10 inputs, so I'll use a for loop. Each loop will append the info to a new DF.
+for (n in seq_len(nrow(fs.all.ko))) {
+  # query KO's in KEGG DB
+  fs.query <- keggGet(fs.all.ko[n, 3])
+  fs.ko <- fs.query[[1]]["ENTRY"][[1]]
+  # check if there's a pathway attached
+  if ("PATHWAY" %in% names(fs.query[[1]][])) {
+    # some ko's might have multiple pathways, so we will go through each pathway and query for its map, name, class. Each pathway will have this info in its own vector, which will go into a list. The list of vectors will be appended to the fs.info dataframe.
+    for (m in names(fs.query[[1]]["PATHWAY"][[1]])) {
+      # get the pathway KO
+      fs.p.ko <- gsub(".*_", "", m)
+      # gets the name of the functional pathway
+      fs.p.name <- as.character(fs.query[[1]]["PATHWAY"][[1]][m])
+      # get higher level class
+      fs.p.class <- keggGet(fs.p.ko)
+      fs.p.class <- as.character(fs.p.class[[1]]["CLASS"])
+      p.inf <- data.frame(
+        SAMPLE = fs.all.ko[n, 1],
+        QUERY_KO = fs.ko,
+        PATHWAY = fs.p.ko,
+        PATHWAY_NAME = fs.p.name,
+        CLASS = fs.p.class
+      )
+    }
+  } else {
+    fs.p.ko <- "No Attributed Pathway"
+    fs.p.name <- "No Attributed Pathway"
+    fs.p.class <- "No Attributed Class"
+    p.inf <- data.frame(
+      SAMPLE = fs.all.ko[n, 1],
+      QUERY_KO = fs.ko,
+      PATHWAY = fs.p.ko,
+      PATHWAY_NAME = fs.p.name,
+      CLASS = fs.p.class
+    )
+  }
+    fs.path.info <- rbind(fs.path.info, p.inf)
+
+}
+
+# get full list of KO's for each PATHWAY that appears in our annotations
+fs.path.all.ko <- data.frame(PATH = character(), KO = character())
+for (i in fs.path.info$PATHWAY) {
+  if (i == "No Attributed Pathway") {
+    return
+  } else {
+    anno.ko.full <- data.frame(PATH = names(keggLink("ko", i)), KO = keggLink("ko", i))
+    fs.path.all.ko <- rbind(fs.path.all.ko, anno.ko.full)
+  }
+}
+```
+
+
+Get all modules from annotations
+```{r}
+bk.mod.info <- data.frame(QUERY_KO = character(), PATH_MODULE = character(), PATHWAY_NAME = character(), MODULE = character(), CLASS = character())
+
+# Get BK MODULE info - note keggGet has a limit of 10 inputs, so I'll use afor loop. Each loop will append the info to a new DF.
+for (n in seq_len(nrow(bk.all.ko))) {
+  # query KO's in KEGG DB
+  bk.query <- keggGet(bk.all.ko[n, 2])
+  bk.ko <- bk.query[[1]]["ENTRY"][[1]]
+  # check if there's a pathway attached
+  if ("MODULE" %in% names(bk.query[[1]][])) {
+    # some ko's might have multiple pathways, so we will go through each pathway and query for its map, name, class. Each pathway will have this info in its own vector, which will go into a list. The list of vectors will be appended to the bk.info dataframe.
+    for (m in names(bk.query[[1]]["MODULE"][[1]])) {
+      # get the pathway KO
+      bk.p.ko <- gsub(".*_", "", m)
+      # gets the name of the functional pathway
+      bk.p.name <- as.character(bk.query[[1]]["MODULE"][[1]][m])
+      # get higher level class
+      bk.p.class <- keggGet(bk.p.ko)
+      bk.p.class <- as.character(bk.p.class[[1]]["CLASS"])
+      p.inf <- data.frame(
+        SAMPLE = bk.all.ko[n, 1],
+        QUERY_KO = bk.ko,
+        PATH_MODULE = bk.p.ko,
+        MODULE_NAME = bk.p.name,
+        CLASS = bk.p.class
+      )
+    }
+  } else {
+    bk.p.ko <- "No Attributed Module"
+    bk.p.name <- "No Attributed Pathway"
+    bk.p.class <- "No Attributed Class"
+    p.inf <- data.frame(
+      QUERY_KO = bk.ko,
+      PATH_MODULE = bk.p.ko,
+      MODULE_NAME = bk.p.name,
+      CLASS = bk.p.class
+    )
+  }
+      bk.mod.info <- rbind(bk.mod.info, p.inf)
+
+}
+
+# get full list of KO's for each module that appears in our annotations
+bk.mod.all.ko <- data.frame(PATH = character(), KO = character())
+for (i in bk.mod.info$PATH_MODULE) {
+  if (i == "No Attributed Module") {
+    return
+  } else {
+    anno.ko.full <- data.frame(PATh = names(keggLink("ko", i)), KO = keggLink("ko", i))
+    bk.mod.all.ko <- rbind(bk.mod.all.ko, anno.ko.full)
+  }
+}
+
+#--------------------------------------
+fs.mod.info <- data.frame(QUERY_KO = character(), PATH_MODULE = character(), PATHWAY_NAME = character(), MODULE = character(), CLASS = character())
+
+# Get FS MODULE info - note keggGet has a limit of 10 inputs, so I'll use a for loop. Each loop will append the info to a new DF.
+for (n in seq_len(nrow(fs.all.ko))) {
+  # query KO's in KEGG DB
+  fs.query <- keggGet(fs.all.ko[n, 3])
+  fs.ko <- fs.query[[1]]["ENTRY"][[1]]
+  # check if there's a pathway attached
+  if ("MODULE" %in% names(fs.query[[1]][])) {
+    # some ko's might have multiple pathways, so we will go through each pathway and query for its map, name, class. Each pathway will have this info in its own vector, which will go into a list. The list of vectors will be appended to the fs.info dataframe.
+    for (m in names(fs.query[[1]]["MODULE"][[1]])) {
+      # get the pathway KO
+      fs.p.ko <- gsub(".*_", "", m)
+      # gets the name of the functional pathway
+      fs.p.name <- as.character(fs.query[[1]]["MODULE"][[1]][m])
+      # get higher level class
+      fs.p.class <- keggGet(fs.p.ko)
+      fs.p.class <- as.character(fs.p.class[[1]]["CLASS"])
+      p.inf <- data.frame(
+        SAMPLE = fs.all.ko[n, 1],
+        QUERY_KO = fs.ko,
+        PATH_MODULE = fs.p.ko,
+        MODULE_NAME = fs.p.name,
+        CLASS = fs.p.class
+      )
+    }
+  } else {
+    fs.p.ko <- "No Attributed Module"
+    fs.p.name <- "No Attributed Pathway"
+    fs.p.class <- "No Attributed Class"
+    p.inf <- data.frame(
+      SAMPLE = fs.all.ko[n, 1],
+      QUERY_KO = fs.ko,
+      PATH_MODULE = fs.p.ko,
+      MODULE_NAME = fs.p.name,
+      CLASS = fs.p.class
+    )
+  }
+    fs.mod.info <- rbind(fs.mod.info, p.inf)
+
+}
+
+# get full list of KO's for each module that appears in our annotations
+fs.mod.all.ko <- data.frame(PATH = character(), KO = character())
+for (i in fs.mod.info$PATH_MODULE) {
+  if (i == "No Attributed Module") {
+    return
+  } else {
+    anno.ko.full <- data.frame(PATH = names(keggLink("ko", i)), KO = keggLink("ko", i))
+    fs.mod.all.ko <- rbind(fs.mod.all.ko, anno.ko.full)
+  }
+}
+```
+
+Get path completeness 
+```{r}
+library(dplyr)
+library(stringr)
+
+#Get only KO's with attached modules
+bk.path.list <- subset(bk.path.info, PATHWAY %!in% "No Attributed Pathway") %>% distinct()
+fs.path.list <- subset(fs.path.info, PATHWAY %!in% "No Attributed Pathway") %>% distinct()
+
+#bakta
+nums <- c(PER.COMP=numeric())
+#iterate over existing modules
+for (i in seq_len(nrow(bk.path.list))){
+  #MODULE number
+  x <- bk.path.list[i,3]
+  #get the list of our annotated KO's in current module of interest
+  chk.path <- as.list(subset(bk.path.list, PATHWAY %in% x))
+  #add md: prefix for string matching in p.total.ko
+  x <- paste("path:",x, sep = "")
+  #get the full list of KO's that are in the module we're checking
+  p.total.ko <- subset(bk.path.all.ko, PATH %in% x)
+  #add ko: prefix for string matching
+  chk.path$QUERY_KO <- paste("ko:",chk.path$QUERY_KO, sep = "")
+  #check number of matches
+  num.match <- sum(chk.path$QUERY_KO %in% p.total.ko$KO)
+  num.total <- nrow(p.total.ko)
+  p.comp = num.match/num.total
+  nums <- append(nums, p.comp)
+}
+
+bk.path.list <- cbind(bk.path.list, nums)
+
+
+#foldseek
+nums <- c(PER.COMP=numeric())
+#iterate over existing modules
+for (i in seq_len(nrow(fs.path.list))){
+  #MODULE number
+  x <- fs.path.list[i,3]
+  #get the list of our annotated KO's in the module
+  chk.path <- as.list(subset(fs.path.list, PATHWAY %in% x))
+  #add md: prefix for string matching in p.total.ko
+  x <- paste("path:",x, sep = "")
+  #get the full list of KO's that are in the module we're checking
+  p.total.ko <- subset(fs.path.all.ko, PATH %in% x)
+  #add ko: prefix for string matching
+  chk.path$QUERY_KO <- paste("ko:",chk.path$QUERY_KO, sep = "")
+  #check number of matches
+  num.match <- sum(chk.path$QUERY_KO %in% p.total.ko$KO)
+  num.total <- nrow(p.total.ko)
+  p.comp = num.match/num.total*100
+  nums <- append(nums, p.comp)
+}
+
+fs.path.list <- cbind(fs.path.list, nums)
+```
+
+
+Get module completeness 
+```{r}
+library(dplyr)
+library(stringr)
+
+#Get only KO's with attached modules
+bk.mod.list <- subset(bk.mod.info, PATH_MODULE %!in% "No Attributed Module") %>% distinct()
+fs.mod.list <- subset(fs.mod.info, PATH_MODULE %!in% "No Attributed Module") %>% distinct()
+
+#bakta
+nums <- c(PER.COMP=numeric())
+#iterate over existing modules
+for (i in seq_len(nrow(bk.mod.list))){
+  #MODULE number
+  x <- bk.mod.list[i,3]
+  #get the list of our annotated KO's in the module
+  chk.mod <- as.list(subset(bk.mod.list, PATH_MODULE %in% x))
+  #add md: prefix for string matching in total.ko
+  x <- paste("md:",x, sep = "")
+  #get the full list of KO's that are in the module we're checking
+  total.ko <- subset(bk.mod.all.ko, PATH %in% x)
+  #add ko: prefix for string matching
+  chk.mod$QUERY_KO <- paste("ko:",chk.mod$QUERY_KO, sep = "")
+  #check number of matches
+  num.match <- sum(chk.mod$QUERY_KO %in% total.ko$KO)
+  num.total <- nrow(total.ko)
+  p.comp = num.match/num.total
+  nums <- append(nums, p.comp)
+}
+
+bk.mod.list <- cbind(bk.mod.list, nums)
+
+
+#foldseek
+nums <- c(PER.COMP=numeric())
+#iterate over existing modules
+for (i in seq_len(nrow(fs.mod.list))){
+  #MODULE number
+  x <- fs.mod.list[i,3]
+  #get the list of our annotated KO's in the module
+  chk.mod <- as.list(subset(fs.mod.list, PATH_MODULE %in% x))
+  #add md: prefix for string matching in total.ko
+  x <- paste("md:",x, sep = "")
+  #get the full list of KO's that are in the module we're checking
+  total.ko <- subset(fs.mod.all.ko, PATH %in% x)
+  #add ko: prefix for string matching
+  chk.mod$QUERY_KO <- paste("ko:",chk.mod$QUERY_KO, sep = "")
+  #check number of matches
+  num.match <- sum(chk.mod$QUERY_KO %in% total.ko$KO)
+  num.total <- nrow(total.ko)
+  p.comp = (num.match/num.total)*100
+  nums <- append(nums, p.comp)
+}
+
+fs.mod.list <- cbind(fs.mod.list, nums)
+
+```
+
+PLOT
+```{r}
+library(stringi)
+library(ggplot2)
+
+pat <- c(
+  "8-carbon_granules4",
+  "7-T2_jan27-20",
+  "3-T4_feb14-20",
+  "9-gac_march_02-20",
+  "6-T2_oct6-20",
+  "5-T2_may3-21",
+  "4-T3_may7-21",
+  "2-T4_may14-21",
+  "1-T1_aug10-21",
+  "10-T3_apr21-22"
+)
+rep <- c(
+  "GAC0",
+  "GAC1",
+  "GAC2",
+  "GAC3",
+  "GAC4",
+  "GAC5",
+  "GAC6",
+  "GAC7",
+  "GAC8",
+  "GAC9"
+)
+
+bk.path.list$SAMPLE <- stri_replace_all_regex(bk.path.list$SAMPLE,
+  pattern = pat,
+  replacement = rep,
+  vectorize = FALSE
+)
+
+fs.path.list$SAMPLE <- stri_replace_all_regex(fs.path.list$SAMPLE,
+  pattern = pat,
+  replacement = rep,
+  vectorize = FALSE
+)
+
+fs.mod.list$SAMPLE <- stri_replace_all_regex(fs.mod.list$SAMPLE,
+  pattern = pat,
+  replacement = rep,
+  vectorize = FALSE
+)
+
+#bk modules - NONE
+#ggplot() +
+# geom_tile(data = bk.mod.list, aes(x=SAMPLE, y = MODULE_NAME, fill = nums))
+
+#bk pathways
+ggplot() +
+  geom_tile(data = bk.path.list, aes(x=SAMPLE, y = PATHWAY_NAME, fill = nums))+
+  scale_fill_gradientn(colors = c("#ccdaff", "#2262ff"))+
+  xlab("Sample")+
+  ylab("KEGG Pathway")+
+  labs(fill = "Complete (%)")+
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.background = element_rect(fill = "#E0F1FF", colour = "#C2E9FF", linetype = "solid", size = 0.01),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+#fs modules
+ggplot() +
+  geom_tile(data = fs.mod.list, aes(x=SAMPLE, y = MODULE_NAME, fill = nums))+
+  scale_fill_gradientn(colors = c("#ccdaff", "#2262ff"))+
+  xlab("Sample")+
+  ylab("KEGG Module")+
+  labs(fill = "Complete (%)")+
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.background = element_rect(fill = "#E0F1FF", colour = "#C2E9FF", linetype = "solid", size = 0.01),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+#fs pathways
+ggplot() +
+  geom_tile(data = fs.path.list, aes(x=SAMPLE, y = PATHWAY_NAME, fill = nums))+
+  scale_fill_gradientn(colors = c("#ccdaff", "#2262ff"))+
+  xlab("Sample")+
+  ylab("KEGG Pathway")+
+  labs(fill = "Complete (%)")+
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.background = element_rect(fill = "#E0F1FF", colour = "#C2E9FF", linetype = "solid", size = 0.01),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```

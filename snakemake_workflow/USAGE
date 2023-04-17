@@ -1,0 +1,6 @@
+#Run polishing pipeline
+#-k option prevents snakemake from terminating due to errors - this is needed as some low coverage circles will be filtered/polished out and will have empty input files/no alignments, which would cause snakemake to error out otherwise.
+snakemake -c50 --use-conda -R -k complete_polishing 
+
+#Calculate coverage
+snakemake -c50 --use-conda -R -k calculate_coverage 

@@ -1,0 +1,33 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+JNLLNN_00005_hypothetical_protein 	A0A285MA99	N-acetyltransferase			1.0					
+JNLLNN_00035_hypothetical_protein 	A0A420ERT4	CPBP family intramembrane metalloprotease			1.0		membrane [GO:0016020]	GO:0016020		
+JNLLNN_00040_Muramidase_domain-containing_protein 	A0A0M4CQI5	Muramidase domain-containing protein			1.0				sphp:LH20_04475;	PF11860;
+JNLLNN_00065_hypothetical_protein 	A0A0N0LXA4	Phage tail protein			1.0					
+JNLLNN_00070_hypothetical_protein 	A0A4V3K9R0	DUF2793 domain-containing protein			1.0					PF10983;
+JNLLNN_00075_hypothetical_protein 	A0A3N5DFM0	Phage protein			1.0					
+JNLLNN_00080_hypothetical_protein 	N8Y853	Peptidase S74 domain-containing protein			1.0					
+JNLLNN_00085_Peptidase-M15-3_domain-containing_protein 	Q2G3Z4	Peptidase_M15_3 domain-containing protein			1.0				nar:Saro_2994;	PF08291;
+JNLLNN_00090_hypothetical_protein 	A0A4Q3ZZI9	HNH endonuclease			1.0		DNA binding [GO:0003677]; endonuclease activity [GO:0004519]	GO:0003677; GO:0004519		PF13392;
+JNLLNN_00095_hypothetical_protein 	A0A2V5PU26	DNA transfer protein			1.0					
+JNLLNN_00100_hypothetical_protein 	A0A0F9L708	Phage tail protein			1.0					
+JNLLNN_00105_hypothetical_protein 	Q2G3Z1	Packaged DNA stabilization protein gp10			1.0				nar:Saro_2997;	PF11134;
+JNLLNN_00110_hypothetical_protein 	Q2G3Z0	Head-to-tail adaptor			1.0				nar:Saro_2998;	PF11650;
+JNLLNN_00115_hypothetical_protein 	A0A8B4NR14	Putative coat protein			1.0					PF11651;
+JNLLNN_00120_hypothetical_protein 	A0A3N5DN42	Scaffolding protein			1.0					
+JNLLNN_00135_hypothetical_protein 	Q2G3Y5	Phage P22-like portal protein			1.0				nar:Saro_3003;	PF16510;
+JNLLNN_00140_PBSX_family_phage_terminase_large_subunit 	A0A3N5CNE5	PBSX family phage terminase large subunit			1.0					PF04466;PF17288;
+JNLLNN_00145_hypothetical_protein 	A0A5B8LGV5	Terminase small subunit protein			1.0				spai:FPZ24_08215;	
+JNLLNN_00150_hypothetical_protein 	A0A2P0AZW5	Transcriptional regulator			1.0					
+JNLLNN_00175_AAA_domain_containing_protein 	A0A7Y0GAN0	AAA family ATPase			1.0					
+JNLLNN_00180_Methyltransferase 	A0A258LMR8	Methyltransferase (EC 2.1.1.-)			1.0	N(4)/N(6)-methyltransferase family	DNA binding [GO:0003677]; N-methyltransferase activity [GO:0008170]; DNA methylation [GO:0006306]	GO:0003677; GO:0006306; GO:0008170		PF01555;
+JNLLNN_00185_hypothetical_protein 	A0A257ZMP7	GIY-YIG domain-containing protein			1.0					PF01541;
+JNLLNN_00195_hypothetical_protein 	A0A7Y0G998	VRR-NUC domain-containing protein			1.0		nucleic acid binding [GO:0003676]	GO:0003676		
+JNLLNN_00210_hypothetical_protein 	A0A0Q4BZX3	Single-stranded DNA-binding protein (SSB)			2.0		single-stranded DNA binding [GO:0003697]; DNA recombination [GO:0006310]; DNA replication [GO:0006260]	GO:0003697; GO:0006260; GO:0006310		PF00436;
+JNLLNN_00230_hypothetical_protein 	A0A420ERP5	XRE family transcriptional regulator			1.0		DNA binding [GO:0003677]	GO:0003677		
+JNLLNN_00245_hypothetical_protein 	A0A4P5NTL7	Polymer-forming cytoskeletal protein			1.0					PF18836;
+JNLLNN_00250_hypothetical_protein 	A0A220W6S0	DUF1805 domain-containing protein			1.0				sfla:SPHFLASMR4Y_01755;	
+JNLLNN_00255_YqaJ_domain-containing_protein 	A0A1G0HZX2	YqaJ-like viral recombinase			1.0					PF09588;
+JNLLNN_00260_hypothetical_protein 	A0A3B7DPQ8	Exonuclease domain-containing protein			1.0		exonuclease activity [GO:0004527]; nucleic acid binding [GO:0003676]	GO:0003676; GO:0004527	not:C7W88_13030;	
+JNLLNN_00265_hypothetical_protein 	A0A249MVF9	DUF1905 domain-containing protein			1.0				shyd:CJD35_13515;	
+JNLLNN_00280_hypothetical_protein 	A0A353YHB8	50S ribosomal protein L34e			1.0					
+JNLLNN_00300_hypothetical_protein 	A0A0P0DV46	DUF551 domain-containing protein			1.0				smaz:LH19_07260;	

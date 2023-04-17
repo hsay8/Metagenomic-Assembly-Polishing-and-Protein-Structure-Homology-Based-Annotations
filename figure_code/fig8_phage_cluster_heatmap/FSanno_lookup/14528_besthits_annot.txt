@@ -1,0 +1,38 @@
+Query	Target Accession	Protein Name	Function [CC]	Pathway [CC]	Annotation Score	Protein families	Gene Ontology (GO)	Gene Ontology IDs	KEGG	PFAM
+DODIAC_00010_hypothetical_protein 	Q5VJ10	Replication protein			1.0					
+DODIAC_00035_hypothetical_protein 	H8FXZ4	OmpR/PhoB-type domain-containing protein			1.0		DNA binding [GO:0003677]; phosphorelay signal transduction system [GO:0000160]; regulation of DNA-templated transcription [GO:0006355]	GO:0000160; GO:0003677; GO:0006355		PF03472;PF00486;
+DODIAC_00070_hypothetical_protein 	A0A259MVK9	Terminase small subunit			1.0					
+DODIAC_00075_PBSX_family_phage_terminase_large_subunit 	W1KIJ2	deleted								
+DODIAC_00080_hypothetical_protein 	A0A845JZR1	DUF1073 domain-containing protein			1.0					PF06381;
+DODIAC_00090_Phage-Mu-F_domain-containing_protein 	A0A2D7ZXH0	Phage_Mu_F domain-containing protein			1.0					PF04233;
+DODIAC_00110_hypothetical_protein 	A0A5C7P4U2	Mtd_N domain-containing protein			1.0					
+DODIAC_00115_hypothetical_protein 	A0A497AKX4	DUF2184 domain-containing protein			1.0					PF19774;
+DODIAC_00125_hypothetical_protein 	A0A2D7ZXG0	Flavoprotein			1.0					PF13262;
+DODIAC_00130_hypothetical_protein 	A0A0F9IK15	Head decoration protein			1.0					
+DODIAC_00135_hypothetical_protein 	A0A0D6AWI8	DUF3168 domain-containing protein			1.0				rsu:NHU_00035;rsu:NHU_04131;	PF12691;
+DODIAC_00140_Hypothetical_phage_protein 	A0A0D6AWE9	Hypothetical phage protein			1.0				rsu:NHU_00036;rsu:NHU_04130;	
+DODIAC_00145_hypothetical_protein 	A0A3E0WQA8	Phage major tail protein, TP901-1 family			1.0					PF06199;
+DODIAC_00150_hypothetical_protein 	A0A6S6QG12	Tail assembly chaperone			1.0				tso:IZ6_07780;	
+DODIAC_00160_hypothetical_protein 	A0A285PJX8	Capsid decoration protein			1.0					
+DODIAC_00165_hypothetical_protein 	A0A1D2SDP9	Tape_meas_lam_C domain-containing protein			1.0		membrane [GO:0016020]	GO:0016020		PF09718;
+DODIAC_00170_hypothetical_protein 	A0A7C2QU37	F5/8 type C domain-containing protein			1.0					
+DODIAC_00175_hypothetical_protein 	A0A0S6USN2	Phage-tail_3 domain-containing protein			1.0					
+DODIAC_00180_hypothetical_protein 	A0A2E1Q3S7	Peptidase S74 domain-containing protein			1.0					PF03903;
+DODIAC_00185_hypothetical_protein 	A0A5C9CQI7	Bacteriophage protein			1.0					
+DODIAC_00190_hypothetical_protein 	A0A2E6GRS9	DUF106 domain-containing protein			1.0		membrane [GO:0016020]	GO:0016020		
+DODIAC_00195_lysozyme 	A0A0R3Q2Y8	lysozyme (EC 3.2.1.17)			2.0		host cell cytoplasm [GO:0030430]; lysozyme activity [GO:0003796]; cell wall macromolecule catabolic process [GO:0016998]; cytolysis [GO:0019835]; defense response to bacterium [GO:0042742]; peptidoglycan catabolic process [GO:0009253]	GO:0003796; GO:0009253; GO:0016998; GO:0019835; GO:0030430; GO:0042742		PF00959;
+DODIAC_00220_hypothetical_protein 	A0A5C7PGH5	Resolvase/invertase-type recombinase catalytic domain-containing protein			1.0					
+DODIAC_00225_hypothetical_protein 	A0A0F8ZFE5	DUF2088 domain-containing protein			1.0					
+DODIAC_00235_hypothetical_protein 	A0A5C7QF10	DUF559 domain-containing protein			1.0					
+DODIAC_00250_hypothetical_protein 	A0A0W0WEK3	Acyl-CoA thioesterase I (EC 3.1.2.-)			1.0		hydrolase activity, acting on ester bonds [GO:0016788]	GO:0016788		PF13472;
+DODIAC_00255_hypothetical_protein 	A0A0S6URY9	Lipoprotein			1.0					
+DODIAC_00265_hypothetical_protein 	A0A4V3DAS3	Phage integrase family protein			1.0		DNA binding [GO:0003677]; DNA integration [GO:0015074]; DNA recombination [GO:0006310]	GO:0003677; GO:0006310; GO:0015074		PF00589;
+DODIAC_00280_hypothetical_protein 	D8JVW4	MazG domain-containing protein			1.0				hdn:Hden_1190;	
+DODIAC_00285_hypothetical_protein 	A0A7R6YSX1	NmrA domain-containing protein			1.0					
+DODIAC_00310_hypothetical_protein 	A0A318TM92	ProP effector			1.0					
+DODIAC_00320_hypothetical_protein 	A0A4P5VF40	Single-stranded DNA-binding protein			1.0					PF04404;
+DODIAC_00330_hypothetical_protein 	A0A2S5MUL1	Transcriptional regulator			1.0		DNA binding [GO:0003677]	GO:0003677		
+DODIAC_00335_hypothetical_protein 	A0A3S0FPN7	N-acetylmuramoyl-L-alanine amidase			1.0					
+DODIAC_00345_hypothetical_protein 	A0A258KYB5	CbiA domain-containing protein			1.0					PF01656;
+DODIAC_00355_Phage-related_protein_Cll 	A0A2Z5EAF4	Sce7726 family protein			1.0				nov:TQ38_008800;	
+DODIAC_00365_hypothetical_protein 	A0A6N6T0T7	Helix-turn-helix domain-containing protein			1.0					
